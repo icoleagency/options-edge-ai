@@ -17,7 +17,7 @@ interface DashboardContextValue {
 
 const defaultPreferences: DashboardPreferences = {
   timeframe: "1M", notifications: true, compactMode: true,
-  visiblePanels: { news: true, earnings: true, analyzer: true, overview: true },
+  visiblePanels: { news: true, earnings: true, analyzer: true, overview: true, alerts: true },
 };
 
 const DashboardContext = createContext<DashboardContextValue | null>(null);

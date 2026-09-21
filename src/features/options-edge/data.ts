@@ -19,7 +19,8 @@ export const companies: Company[] = [
 
 export const defaultWatchlist = ["AAPL", "NVDA", "TSLA", "AMZN", "MSFT", "META", "GOOGL", "AMD", "PLTR", "SPY"];
 export const marketSymbols = ["SPY", "QQQ", "DIA", "IWM", "VIX"];
-export const getCompany = (symbol: string) => companies.find((c) => c.symbol === symbol) ?? companies[0];
+const fallbackCompany: Company = { symbol: "SPY", name: "SPDR S&P 500 ETF", price: 663.70, change: 0.24, spark: [46,47,49,48,50,51,50,52,54,55] };
+export const getCompany = (symbol: string): Company => companies.find((c) => c.symbol === symbol) ?? fallbackCompany;
 
 const generalNews = [
   { headline: "Investors assess rate outlook as technology shares lead", category: "Macroeconomic" as const, impact: "High" as const, summary: "Treasury yields and policy expectations remain key inputs for growth-stock valuations." },
@@ -35,8 +36,8 @@ export function getNews(symbol: string): NewsItem[] {
     symbol,
     ...item,
     headline: index === 0 ? `${company.name} holds near a key technical range` : item.headline,
-    source: ["Market Brief", "Options Desk", "Street Research", "Earnings Wire"][index],
-    timestamp: ["18 min ago", "1 hr ago", "3 hrs ago", "Yesterday"][index],
+    source: ["Market Brief", "Options Desk", "Street Research", "Earnings Wire"][index] ?? "Market Brief",
+    timestamp: ["18 min ago", "1 hr ago", "3 hrs ago", "Yesterday"][index] ?? "Recently",
   }));
 }
 

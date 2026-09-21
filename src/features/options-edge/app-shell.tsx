@@ -15,7 +15,7 @@ const nav = [
   { to: "/news", label: "Market News", icon: Newspaper },
   { to: "/earnings", label: "Earnings Calendar", icon: CalendarDays },
   { to: "/analyzer", label: "AI Trade Analyzer", icon: BrainCircuit },
-  { to: "/options-lab", label: "Options Lab", icon: FlaskConical, soon: true },
+  { to: "/options-lab", label: "Options Lab", icon: FlaskConical },
   { to: "/learning", label: "Learning Center", icon: BookOpen },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;

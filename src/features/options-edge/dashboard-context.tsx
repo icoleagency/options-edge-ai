@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type Context, type ReactNode } from "react";
 import { defaultWatchlist } from "./data";
 import type { DashboardPreferences } from "./types";
 

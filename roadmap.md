@@ -9,10 +9,10 @@
 - [x] Align the default watchlist and chart states with the final brief
 - [x] Add the simulated TradingView webhook alert history panel
 - [x] Replace sample AI scoring with an honest disconnected analysis state
-- [ ] Make the chart the primary workspace with a professional integration-ready toolbar
-- [ ] Add explainable sample trade setup intelligence and reusable Why interactions
-- [ ] Add the simulated Options Contract Lab preview and analysis-gated state
-- [ ] Upgrade news into Catalyst Intelligence with impact and relevance explanations
-- [ ] Expand alerts into a structured future TradingView webhook center
-- [ ] Add the simulated market regime indicator and beginner education tooltips
-- [ ] Validate all new interactions across desktop and mobile
+- [x] Make the chart the primary workspace with a professional integration-ready toolbar
+- [x] Add explainable sample trade setup intelligence and reusable Why interactions
+- [x] Add the simulated Options Contract Lab preview and analysis-gated state
+- [x] Upgrade news into Catalyst Intelligence with impact and relevance explanations
+- [x] Expand alerts into a structured future TradingView webhook center
+- [x] Add the simulated market regime indicator and beginner education tooltips
+- [x] Validate all new interactions across desktop and mobile

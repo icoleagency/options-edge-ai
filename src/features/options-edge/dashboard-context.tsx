@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type Context, type ReactNode } from "react";
 import { defaultWatchlist } from "./data";
 import type { DashboardPreferences } from "./types";
 
@@ -20,7 +20,14 @@ const defaultPreferences: DashboardPreferences = {
   visiblePanels: { news: true, earnings: true, analyzer: true, overview: true, alerts: true },
 };
 
-const DashboardContext = createContext<DashboardContextValue | null>(null);
+// Keep a single context instance across hot-module reloads so consumers that
+// still reference the previous module copy resolve the same provider.
+const globalScope = globalThis as typeof globalThis & {
+  __optionsEdgeDashboardContext?: Context<DashboardContextValue | null>;
+};
+const DashboardContext =
+  globalScope.__optionsEdgeDashboardContext ??
+  (globalScope.__optionsEdgeDashboardContext = createContext<DashboardContextValue | null>(null));
 const STORAGE_KEY = "options-edge-ai:dashboard-v1";
 
 export function DashboardProvider({ children }: { children: ReactNode }) {

@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalyzerRouteImport } from './routes/analyzer'
+import { Route as EarningsRouteImport } from './routes/earnings'
+import { Route as LearningRouteImport } from './routes/learning'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as OptionsLabRouteImport } from './routes/options-lab'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as WatchlistRouteImport } from './routes/watchlist'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyzerRoute = AnalyzerRouteImport.update({
+  id: '/analyzer',
+  path: '/analyzer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EarningsRoute = EarningsRouteImport.update({
+  id: '/earnings',
+  path: '/earnings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearningRoute = LearningRouteImport.update({
+  id: '/learning',
+  path: '/learning',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OptionsLabRoute = OptionsLabRouteImport.update({
+  id: '/options-lab',
+  path: '/options-lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WatchlistRoute = WatchlistRouteImport.update({
+  id: '/watchlist',
+  path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analyzer': typeof AnalyzerRoute
+  '/earnings': typeof EarningsRoute
+  '/learning': typeof LearningRoute
+  '/news': typeof NewsRoute
+  '/options-lab': typeof OptionsLabRoute
+  '/settings': typeof SettingsRoute
+  '/watchlist': typeof WatchlistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analyzer': typeof AnalyzerRoute
+  '/earnings': typeof EarningsRoute
+  '/learning': typeof LearningRoute
+  '/news': typeof NewsRoute
+  '/options-lab': typeof OptionsLabRoute
+  '/settings': typeof SettingsRoute
+  '/watchlist': typeof WatchlistRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analyzer': typeof AnalyzerRoute
+  '/earnings': typeof EarningsRoute
+  '/learning': typeof LearningRoute
+  '/news': typeof NewsRoute
+  '/options-lab': typeof OptionsLabRoute
+  '/settings': typeof SettingsRoute
+  '/watchlist': typeof WatchlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/analyzer'
+    | '/earnings'
+    | '/learning'
+    | '/news'
+    | '/options-lab'
+    | '/settings'
+    | '/watchlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/analyzer'
+    | '/earnings'
+    | '/learning'
+    | '/news'
+    | '/options-lab'
+    | '/settings'
+    | '/watchlist'
+  id:
+    | '__root__'
+    | '/'
+    | '/analyzer'
+    | '/earnings'
+    | '/learning'
+    | '/news'
+    | '/options-lab'
+    | '/settings'
+    | '/watchlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyzerRoute: typeof AnalyzerRoute
+  EarningsRoute: typeof EarningsRoute
+  LearningRoute: typeof LearningRoute
+  NewsRoute: typeof NewsRoute
+  OptionsLabRoute: typeof OptionsLabRoute
+  SettingsRoute: typeof SettingsRoute
+  WatchlistRoute: typeof WatchlistRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analyzer': {
+      id: '/analyzer'
+      path: '/analyzer'
+      fullPath: '/analyzer'
+      preLoaderRoute: typeof AnalyzerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/earnings': {
+      id: '/earnings'
+      path: '/earnings'
+      fullPath: '/earnings'
+      preLoaderRoute: typeof EarningsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning': {
+      id: '/learning'
+      path: '/learning'
+      fullPath: '/learning'
+      preLoaderRoute: typeof LearningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/options-lab': {
+      id: '/options-lab'
+      path: '/options-lab'
+      fullPath: '/options-lab'
+      preLoaderRoute: typeof OptionsLabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/watchlist': {
+      id: '/watchlist'
+      path: '/watchlist'
+      fullPath: '/watchlist'
+      preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyzerRoute: AnalyzerRoute,
+  EarningsRoute: EarningsRoute,
+  LearningRoute: LearningRoute,
+  NewsRoute: NewsRoute,
+  OptionsLabRoute: OptionsLabRoute,
+  SettingsRoute: SettingsRoute,
+  WatchlistRoute: WatchlistRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

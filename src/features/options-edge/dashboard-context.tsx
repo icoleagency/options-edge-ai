@@ -23,7 +23,7 @@ const defaultPreferences: DashboardPreferences = {
 // Keep a single context instance across hot-module reloads so consumers that
 // still reference the previous module copy resolve the same provider.
 const globalScope = globalThis as typeof globalThis & {
-  __optionsEdgeDashboardContext?: React.Context<DashboardContextValue | null>;
+  __optionsEdgeDashboardContext?: Context<DashboardContextValue | null>;
 };
 const DashboardContext =
   globalScope.__optionsEdgeDashboardContext ??

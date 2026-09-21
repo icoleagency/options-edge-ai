@@ -47,7 +47,7 @@ export interface AnalysisData {
 
 export interface DashboardPreferences {
   timeframe: string;
-  visiblePanels: Record<"news" | "earnings" | "analyzer" | "overview", boolean>;
+  visiblePanels: Record<"news" | "earnings" | "analyzer" | "overview" | "alerts", boolean>;
   notifications: boolean;
   compactMode: boolean;
 }

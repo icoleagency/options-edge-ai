@@ -2,6 +2,7 @@ import type { AnalysisData, Company, EarningsData, NewsItem } from "./types";
 
 export const companies: Company[] = [
   { symbol: "AAPL", name: "Apple Inc.", price: 254.63, change: 0.58, earningsDays: 31, spark: [43,45,44,48,47,51,53,52,56,58] },
+  { symbol: "BLK", name: "BlackRock Inc.", price: 1182.44, change: 0.36, earningsDays: 22, spark: [44,46,45,48,50,49,52,51,54,56] },
   { symbol: "NVDA", name: "NVIDIA Corp.", price: 176.24, change: 1.84, earningsDays: 18, spark: [40,42,39,46,50,48,54,57,55,62] },
   { symbol: "TSLA", name: "Tesla Inc.", price: 429.52, change: -1.26, earningsDays: 9, spark: [61,58,59,53,55,49,51,47,45,43] },
   { symbol: "AMZN", name: "Amazon.com Inc.", price: 231.44, change: 0.32, spark: [41,43,42,44,48,47,49,50,52,53] },
@@ -17,7 +18,7 @@ export const companies: Company[] = [
   { symbol: "VIX", name: "CBOE Volatility Index", price: 16.43, change: -2.14, spark: [62,58,60,55,52,54,49,47,45,43] },
 ];
 
-export const defaultWatchlist = ["AAPL", "NVDA", "TSLA", "AMZN", "MSFT", "META", "GOOGL", "AMD", "PLTR", "SPY"];
+export const defaultWatchlist = ["AAPL", "BLK", "AMZN", "GOOGL", "META", "MSFT", "NVDA", "PLTR", "SPY"];
 export const marketSymbols = ["SPY", "QQQ", "DIA", "IWM", "VIX"];
 const fallbackCompany: Company = { symbol: "SPY", name: "SPDR S&P 500 ETF", price: 663.70, change: 0.24, spark: [46,47,49,48,50,51,50,52,54,55] };
 export const getCompany = (symbol: string): Company => companies.find((c) => c.symbol === symbol) ?? fallbackCompany;

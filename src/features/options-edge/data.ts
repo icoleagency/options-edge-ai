@@ -1,4 +1,4 @@
-import type { AnalysisData, Company, EarningsData, NewsItem } from "./types";
+import type { AnalysisData, Company, EarningsData, NewsItem, OptionContract, TradeSetupData } from "./types";
 
 export const companies: Company[] = [
   { symbol: "AAPL", name: "Apple Inc.", price: 254.63, change: 0.58, earningsDays: 31, spark: [43,45,44,48,47,51,53,52,56,58] },
@@ -24,10 +24,10 @@ const fallbackCompany: Company = { symbol: "SPY", name: "SPDR S&P 500 ETF", pric
 export const getCompany = (symbol: string): Company => companies.find((c) => c.symbol === symbol) ?? fallbackCompany;
 
 const generalNews = [
-  { headline: "Investors assess rate outlook as technology shares lead", category: "Macroeconomic" as const, impact: "High" as const, summary: "Treasury yields and policy expectations remain key inputs for growth-stock valuations." },
-  { headline: "Options activity rises ahead of the next catalyst window", category: "Company News" as const, impact: "Medium" as const, summary: "Implied volatility is reflecting increased demand for near-term protection and directional exposure." },
-  { headline: "Analysts refine estimates following recent sector checks", category: "Analyst Ratings" as const, impact: "Medium" as const, summary: "Updated channel data has prompted modest changes to revenue and margin expectations." },
-  { headline: "Earnings expectations remain central to near-term price action", category: "Earnings" as const, impact: "High" as const, summary: "Traders are watching guidance language and forward demand signals more closely than headline results." },
+  { headline: "Investors assess rate outlook as technology shares lead", category: "Macro" as const, impact: "High" as const, summary: "Treasury yields and policy expectations remain key inputs for growth-stock valuations.", whyItMatters: "Changes in Treasury yields can affect valuation expectations for growth-oriented companies and may influence the broader trend." },
+  { headline: "Options activity rises ahead of the next catalyst window", category: "Company" as const, impact: "Medium" as const, summary: "Implied volatility is reflecting increased demand for near-term protection and directional exposure.", whyItMatters: "Rising options activity can signal that traders expect a larger move, but it does not predict the direction of that move." },
+  { headline: "Analysts refine estimates following recent sector checks", category: "Analyst" as const, impact: "Medium" as const, summary: "Updated channel data has prompted modest changes to revenue and margin expectations.", whyItMatters: "Estimate changes can reset expectations before earnings and may alter the price levels traders consider important." },
+  { headline: "Earnings expectations remain central to near-term price action", category: "Earnings" as const, impact: "High" as const, summary: "Traders are watching guidance language and forward demand signals more closely than headline results.", whyItMatters: "Earnings can create fast price and volatility changes, making confirmation and risk limits especially important." },
 ];
 
 export function getNews(symbol: string): NewsItem[] {
@@ -77,6 +77,62 @@ export function getAnalysis(symbol: string): AnalysisData {
   };
 }
 
+export function getTradeSetup(symbol: string): TradeSetupData {
+  const company = getCompany(symbol);
+  const bullish = company.change > 0.7;
+  const bearish = company.change < -0.7;
+  const bias = bullish ? "Bullish" : bearish ? "Bearish" : "Neutral";
+  const support = `$${(company.price * 0.97).toFixed(2)}`;
+  const resistance = `$${(company.price * 1.03).toFixed(2)}`;
+  return {
+    bias,
+    trend: bullish ? "Bullish" : bearish ? "Bearish" : "Neutral",
+    momentum: bullish ? "Positive" : bearish ? "Weak" : "Neutral",
+    volume: "Neutral",
+    support,
+    resistance,
+    catalysts: ["Earnings", "News", "Analyst Activity", "Macro", "Sector"],
+    status: "Watch",
+    biasExplanation: bullish
+      ? "The sample price is holding above its recent range and momentum is positive. Resistance is not confirmed as broken, so this remains a Watch rather than a trade signal."
+      : bearish
+        ? "The sample price is weakening relative to its recent range. Support has not been confirmed as broken, so the bearish case remains a Watch."
+        : "The sample price is between support and resistance without enough momentum or volume confirmation to favor either direction.",
+    momentumExplanation: "Momentum describes how strongly price is moving. This sample reading uses recent direction only; live price and volume data are required for confirmation.",
+    call: {
+      label: "Potential Call", status: bullish ? "Potential Call" : "Watch",
+      met: bullish ? ["Price is above the sample support zone", "Short-term direction is positive"] : ["Price remains above the first support level"],
+      unmet: ["Resistance breakout is not confirmed", "Live volume confirmation is unavailable"],
+      confirmation: `A sustained move above ${resistance} with stronger volume`,
+      invalidation: `A close below sample support at ${support}`,
+      risks: ["Earnings volatility", "Broad-market reversal", "Time decay if price stalls"],
+      explanation: "A call setup would become more relevant only if price clears resistance with confirming volume. Until then, the sample state is educational and remains on Watch.",
+    },
+    put: {
+      label: "Potential Put", status: bearish ? "Potential Put" : "Watch",
+      met: bearish ? ["Price direction is weakening", "Momentum is below neutral"] : ["Price remains below the sample resistance zone"],
+      unmet: ["Support breakdown is not confirmed", "Live downside volume is unavailable"],
+      confirmation: `A sustained break below ${support} with expanding volume`,
+      invalidation: `A recovery above sample resistance at ${resistance}`,
+      risks: ["Sharp relief rally", "Falling implied volatility", "Time decay if price stays range-bound"],
+      explanation: "A put setup would require a confirmed support break and stronger downside participation. Without both, the sample state remains on Watch.",
+    },
+  };
+}
+
+export function getOptionContracts(symbol: string): OptionContract[] {
+  const company = getCompany(symbol);
+  const base = Math.round(company.price / 5) * 5;
+  const expiration = "Nov 20, 2026";
+  return (["Call", "Put"] as const).flatMap((type) => [-10, -5, 0, 5, 10].map((offset, index) => {
+    const strike = base + offset;
+    const distance = Math.abs(offset);
+    const moneyness = offset === 0 ? "ATM" : type === "Call" ? (offset < 0 ? "ITM" : "OTM") : (offset > 0 ? "ITM" : "OTM");
+    const mid = Math.max(1.15, 8.4 - distance * 0.45 + (type === "Call" ? company.change : -company.change) * 0.2);
+    return { id: `${symbol}-${type}-${strike}`, type, expiration, strike, bid: Number((mid - 0.18).toFixed(2)), ask: Number((mid + 0.18).toFixed(2)), last: Number(mid.toFixed(2)), volume: 180 + index * 137, openInterest: 920 + index * 641, iv: Number((31.4 + index * 1.8).toFixed(1)), delta: Number(((type === "Call" ? 0.62 : -0.38) - index * 0.06).toFixed(2)), gamma: Number((0.018 + index * 0.003).toFixed(3)), theta: Number((-0.08 - index * 0.014).toFixed(3)), vega: Number((0.12 + index * 0.018).toFixed(3)), moneyness };
+  }));
+}
+
 export function makeChartData(symbol: string) {
   const company = getCompany(symbol);
   return Array.from({ length: 42 }, (_, index) => {
@@ -98,4 +154,13 @@ export const glossary: Record<string, string> = {
   Volume: "The number of shares or contracts traded during a period.",
   Bullish: "Expecting or observing conditions that favor rising prices.",
   Bearish: "Expecting or observing conditions that favor falling prices.",
+  Neutral: "Conditions do not clearly favor rising or falling prices yet.",
+  Momentum: "How quickly and consistently price is moving in one direction.",
+  IV: "Implied volatility: the options market's estimate of how much the stock may move, not which direction.",
+  Delta: "An estimate of how much an option price may change for a $1 move in the stock.",
+  Gamma: "How quickly an option's delta may change when the stock price moves.",
+  Theta: "The estimated amount of option value lost each day from the passage of time.",
+  Vega: "How sensitive an option price is to a change in implied volatility.",
+  "Open Interest": "The number of option contracts that remain open and have not been closed or exercised.",
+  "Earnings Volatility": "The larger price and implied-volatility changes that often occur around an earnings report.",
 };

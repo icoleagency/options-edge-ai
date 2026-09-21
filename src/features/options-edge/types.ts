@@ -16,9 +16,10 @@ export interface NewsItem {
   headline: string;
   source: string;
   timestamp: string;
-  category: "Earnings" | "Company News" | "Analyst Ratings" | "Macroeconomic";
+  category: "Earnings" | "Company" | "Analyst" | "Macro" | "Regulatory" | "Product" | "Industry";
   impact: "High" | "Medium" | "Low";
   summary: string;
+  whyItMatters: string;
   url?: string;
 }
 
@@ -43,6 +44,52 @@ export interface AnalysisData {
   putConditions: string[];
   risk: string[];
   confidence: number;
+}
+
+export type SetupOutcome = "Potential Call" | "Potential Put" | "Watch" | "No Setup";
+
+export interface SetupDetail {
+  label: "Potential Call" | "Potential Put";
+  status: SetupOutcome;
+  met: string[];
+  unmet: string[];
+  confirmation: string;
+  invalidation: string;
+  risks: string[];
+  explanation: string;
+}
+
+export interface TradeSetupData {
+  bias: Bias;
+  trend: "Strong Bullish" | "Bullish" | "Neutral" | "Bearish" | "Strong Bearish";
+  momentum: "Strong" | "Positive" | "Neutral" | "Weak" | "Negative";
+  volume: "Confirming" | "Neutral" | "Weak";
+  support: string;
+  resistance: string;
+  catalysts: string[];
+  status: SetupOutcome;
+  biasExplanation: string;
+  momentumExplanation: string;
+  call: SetupDetail;
+  put: SetupDetail;
+}
+
+export interface OptionContract {
+  id: string;
+  type: "Call" | "Put";
+  expiration: string;
+  strike: number;
+  bid: number;
+  ask: number;
+  last: number;
+  volume: number;
+  openInterest: number;
+  iv: number;
+  delta: number;
+  gamma: number;
+  theta: number;
+  vega: number;
+  moneyness: "ITM" | "ATM" | "OTM";
 }
 
 export interface DashboardPreferences {

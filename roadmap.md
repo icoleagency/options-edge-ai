@@ -6,6 +6,6 @@
 - [x] Add future provider service interfaces and disconnected states
 - [x] Add watchlist, news, earnings, analyzer, Options Lab, learning, and settings pages
 - [x] Validate desktop and mobile interactions in browser
-- [ ] Align the default watchlist and chart states with the final brief
-- [ ] Add the simulated TradingView webhook alert history panel
-- [ ] Replace sample AI scoring with an honest disconnected analysis state
+- [x] Align the default watchlist and chart states with the final brief
+- [x] Add the simulated TradingView webhook alert history panel
+- [x] Replace sample AI scoring with an honest disconnected analysis state

@@ -20,7 +20,14 @@ const defaultPreferences: DashboardPreferences = {
   visiblePanels: { news: true, earnings: true, analyzer: true, overview: true, alerts: true },
 };
 
-const DashboardContext = createContext<DashboardContextValue | null>(null);
+// Keep a single context instance across hot-module reloads so consumers that
+// still reference the previous module copy resolve the same provider.
+const globalScope = globalThis as typeof globalThis & {
+  __optionsEdgeDashboardContext?: React.Context<DashboardContextValue | null>;
+};
+const DashboardContext =
+  globalScope.__optionsEdgeDashboardContext ??
+  (globalScope.__optionsEdgeDashboardContext = createContext<DashboardContextValue | null>(null));
 const STORAGE_KEY = "options-edge-ai:dashboard-v1";
 
 export function DashboardProvider({ children }: { children: ReactNode }) {

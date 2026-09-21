@@ -1,6 +1,8 @@
 import { Info, LoaderCircle, PlugZap } from "lucide-react";
 import type { ReactNode } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { glossary } from "./data";
 
@@ -24,6 +26,10 @@ export function StatusDot({ status = "disconnected" }: { status?: "connected" | 
 
 export function Term({ children }: { children: keyof typeof glossary }) {
   return <TooltipProvider delayDuration={150}><Tooltip><TooltipTrigger asChild><button type="button" className="inline-flex items-center gap-1 border-b border-dotted border-muted-foreground/50 text-left">{children}<Info className="size-3 text-muted-foreground" /></button></TooltipTrigger><TooltipContent side="top" className="max-w-64 border border-border bg-popover text-popover-foreground shadow-xl"><p>{glossary[children]}</p></TooltipContent></Tooltip></TooltipProvider>;
+}
+
+export function Why({ title, children }: { title: string; children: ReactNode }) {
+  return <Popover><PopoverTrigger asChild><Button type="button" variant="ghost" size="sm" className="h-5 px-1.5 text-[9px] font-semibold uppercase text-primary">Why?</Button></PopoverTrigger><PopoverContent align="start" className="w-72 border-border bg-popover p-3"><p className="text-[10px] font-semibold uppercase text-primary">{title}</p><p className="mt-2 text-xs leading-relaxed text-muted-foreground">{children}</p></PopoverContent></Popover>;
 }
 
 export function DataState({ state, compact = false }: { state: "loading" | "empty" | "error" | "disconnected"; compact?: boolean }) {

@@ -16,7 +16,7 @@ interface DashboardContextValue {
 }
 
 const defaultPreferences: DashboardPreferences = {
-  timeframe: "1M", notifications: true, compactMode: true,
+  timeframe: "1D", notifications: true, compactMode: true,
   visiblePanels: { news: true, earnings: true, analyzer: true, overview: true, alerts: true },
 };
 
@@ -36,7 +36,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(stored) as { watchlist?: string[]; selectedSymbol?: string; preferences?: DashboardPreferences };
         if (parsed.watchlist?.length) setWatchlist(parsed.watchlist);
         if (parsed.selectedSymbol) setSelectedSymbol(parsed.selectedSymbol);
-        if (parsed.preferences) setPreferences({ ...defaultPreferences, ...parsed.preferences, visiblePanels: { ...defaultPreferences.visiblePanels, ...parsed.preferences.visiblePanels } });
+        if (parsed.preferences) {
+          const allowedTimeframes = ["1m", "5m", "15m", "30m", "1H", "4H", "1D", "1W"];
+          setPreferences({ ...defaultPreferences, ...parsed.preferences, timeframe: allowedTimeframes.includes(parsed.preferences.timeframe) ? parsed.preferences.timeframe : defaultPreferences.timeframe, visiblePanels: { ...defaultPreferences.visiblePanels, ...parsed.preferences.visiblePanels } });
+        }
       }
     } catch { /* Invalid stored prototype preferences fall back safely. */ }
     setHydrated(true);

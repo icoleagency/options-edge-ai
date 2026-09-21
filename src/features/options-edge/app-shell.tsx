@@ -15,7 +15,7 @@ const nav = [
   { to: "/news", label: "Market News", icon: Newspaper },
   { to: "/earnings", label: "Earnings Calendar", icon: CalendarDays },
   { to: "/analyzer", label: "AI Trade Analyzer", icon: BrainCircuit },
-  { to: "/options-lab", label: "Options Lab", icon: FlaskConical, soon: true },
+  { to: "/options-lab", label: "Options Lab", icon: FlaskConical },
   { to: "/learning", label: "Learning Center", icon: BookOpen },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
@@ -28,7 +28,7 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return <nav className="space-y-1 px-3 py-4" aria-label="Primary navigation">{nav.map((item) => {
     const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
-    return <Link key={item.to} to={item.to} onClick={onNavigate} className={cn("group flex min-h-9 items-center gap-3 border-l-2 px-3 text-xs font-medium transition-colors", active ? "border-primary bg-primary/10 text-foreground" : "border-transparent text-muted-foreground hover:bg-accent hover:text-foreground")}><item.icon className={cn("size-4", active ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} /><span className="flex-1">{item.label}</span>{"soon" in item && item.soon && <span className="rounded-sm bg-muted px-1 py-0.5 text-[8px] uppercase text-muted-foreground">Soon</span>}</Link>;
+    return <Link key={item.to} to={item.to} onClick={onNavigate} className={cn("group flex min-h-9 items-center gap-3 border-l-2 px-3 text-xs font-medium transition-colors", active ? "border-primary bg-primary/10 text-foreground" : "border-transparent text-muted-foreground hover:bg-accent hover:text-foreground")}><item.icon className={cn("size-4", active ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} /><span className="flex-1">{item.label}</span></Link>;
   })}</nav>;
 }
 

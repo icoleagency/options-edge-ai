@@ -1,5 +1,5 @@
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis } from "recharts";
-import { BellRing, ChevronDown, ChevronUp, Expand, LineChart, MoreHorizontal, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp, Webhook } from "lucide-react";
+import { BellRing, BrainCircuit, Check, ChevronDown, ChevronUp, Expand, LineChart, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp, Webhook } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,18 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { companies, getCompany, getEarnings, getNews, makeChartData, marketSymbols } from "./data";
 import { useDashboard } from "./dashboard-context";
-import { Change, Panel, SampleBadge, Term } from "./ui";
+import { Change, Panel, SampleBadge, Term, Why } from "./ui";
+import { AITradeSetupPanel } from "./trade-setup-panel";
+import { OptionsContractLab } from "./options-contract-lab";
 
 export function MarketOverviewStrip() {
   const { preferences } = useDashboard();
   if (!preferences.visiblePanels.overview) return null;
   return <section aria-label="Market overview" className="grid border-y border-border bg-card sm:grid-cols-5">{marketSymbols.map((symbol, index) => { const item = getCompany(symbol); return <div key={symbol} className={cn("flex min-h-16 items-center justify-between gap-3 px-4 py-2", index > 0 && "border-t border-border sm:border-l sm:border-t-0")}><div><div className="flex items-center gap-2"><b className="text-xs">{item.symbol}</b><SampleBadge /></div><p className="mt-1 font-mono text-xs tabular-nums">{item.price.toFixed(2)}</p></div><Change value={item.change} /></div>; })}</section>;
+}
+
+export function MarketRegimeIndicator() {
+  return <section aria-label="Market regime" className="flex flex-wrap items-center gap-3 border border-border bg-card px-3 py-2"><div><p className="text-[9px] font-semibold uppercase text-muted-foreground">Market regime</p><div className="mt-0.5 flex items-center gap-2"><span className="size-1.5 rounded-full bg-positive" /><strong className="text-xs text-positive">Risk-On</strong><SampleBadge>Simulated</SampleBadge></div></div><div className="ml-auto max-w-lg text-right text-[9px] leading-relaxed text-muted-foreground">Prototype classification based on sample SPY, QQQ, and VIX conditions. Live broad-market data is not connected.</div></section>;
 }
 
 export function WatchlistPanel({ management = false }: { management?: boolean }) {

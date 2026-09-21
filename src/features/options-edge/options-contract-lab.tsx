@@ -29,5 +29,6 @@ export function OptionsContractLab({ full = false }: { full?: boolean }) {
 }
 
 function Filter({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange?: (value: string) => void }) {
-  return <div><p className="mb-1 text-[8px] font-semibold uppercase text-muted-foreground">{label}</p><Select value={value} onValueChange={onChange}><SelectTrigger className="h-8 min-w-28 text-[10px]"><SelectValue /></SelectTrigger><SelectContent>{options.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>;
+  const selectProps = onChange ? { value, onValueChange: onChange } : { defaultValue: value };
+  return <div><p className="mb-1 text-[8px] font-semibold uppercase text-muted-foreground">{label}</p><Select {...selectProps}><SelectTrigger className="h-8 min-w-28 text-[10px]"><SelectValue /></SelectTrigger><SelectContent>{options.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>;
 }

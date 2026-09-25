@@ -15,7 +15,6 @@ import { Route as EarningsRouteImport } from './routes/earnings'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as LearningRouteImport } from './routes/learning'
 import { Route as NewsRouteImport } from './routes/news'
-import { Route as OptionsLabRouteImport } from './routes/options-lab'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
 
@@ -49,11 +48,6 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OptionsLabRoute = OptionsLabRouteImport.update({
-  id: '/options-lab',
-  path: '/options-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -72,7 +66,6 @@ export interface FileRoutesByFullPath {
   '/journal': typeof JournalRoute
   '/learning': typeof LearningRoute
   '/news': typeof NewsRoute
-  '/options-lab': typeof OptionsLabRoute
   '/settings': typeof SettingsRoute
   '/watchlist': typeof WatchlistRoute
 }
@@ -83,7 +76,6 @@ export interface FileRoutesByTo {
   '/journal': typeof JournalRoute
   '/learning': typeof LearningRoute
   '/news': typeof NewsRoute
-  '/options-lab': typeof OptionsLabRoute
   '/settings': typeof SettingsRoute
   '/watchlist': typeof WatchlistRoute
 }
@@ -95,7 +87,6 @@ export interface FileRoutesById {
   '/journal': typeof JournalRoute
   '/learning': typeof LearningRoute
   '/news': typeof NewsRoute
-  '/options-lab': typeof OptionsLabRoute
   '/settings': typeof SettingsRoute
   '/watchlist': typeof WatchlistRoute
 }
@@ -108,7 +99,6 @@ export interface FileRouteTypes {
     | '/journal'
     | '/learning'
     | '/news'
-    | '/options-lab'
     | '/settings'
     | '/watchlist'
   fileRoutesByTo: FileRoutesByTo
@@ -119,7 +109,6 @@ export interface FileRouteTypes {
     | '/journal'
     | '/learning'
     | '/news'
-    | '/options-lab'
     | '/settings'
     | '/watchlist'
   id:
@@ -130,7 +119,6 @@ export interface FileRouteTypes {
     | '/journal'
     | '/learning'
     | '/news'
-    | '/options-lab'
     | '/settings'
     | '/watchlist'
   fileRoutesById: FileRoutesById
@@ -142,7 +130,6 @@ export interface RootRouteChildren {
   JournalRoute: typeof JournalRoute
   LearningRoute: typeof LearningRoute
   NewsRoute: typeof NewsRoute
-  OptionsLabRoute: typeof OptionsLabRoute
   SettingsRoute: typeof SettingsRoute
   WatchlistRoute: typeof WatchlistRoute
 }
@@ -191,13 +178,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/options-lab': {
-      id: '/options-lab'
-      path: '/options-lab'
-      fullPath: '/options-lab'
-      preLoaderRoute: typeof OptionsLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -222,7 +202,6 @@ const rootRouteChildren: RootRouteChildren = {
   JournalRoute: JournalRoute,
   LearningRoute: LearningRoute,
   NewsRoute: NewsRoute,
-  OptionsLabRoute: OptionsLabRoute,
   SettingsRoute: SettingsRoute,
   WatchlistRoute: WatchlistRoute,
 }

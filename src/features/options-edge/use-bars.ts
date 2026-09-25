@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getBars } from "./market-data.functions";
+import { getBars, getIntradayBars } from "./market-data.functions";
 
 export type BarsState = "loading" | "empty" | "error" | "disconnected" | "ok";
 
@@ -23,4 +23,16 @@ export function useBars(symbol: string) {
   const prev = bars[bars.length - 2];
   const quote = last ? { price: last.c, change: prev ? ((last.c - prev.c) / prev.c) * 100 : 0 } : null;
   return { bars, state, quote };
+}
+
+export function useIntradayBars(symbol: string) {
+  const fetchIntraday = useServerFn(getIntradayBars);
+  const query = useQuery({
+    queryKey: ["alpaca-intraday-bars", symbol],
+    queryFn: () => fetchIntraday({ data: { symbol } }),
+    staleTime: 60_000,
+    retry: false,
+  });
+  const bars = query.data?.status === "ok" ? query.data.bars : [];
+  return { bars };
 }

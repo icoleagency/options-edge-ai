@@ -13,7 +13,7 @@ export const getBars = createServerFn({ method: "GET" })
     const secret = process.env["ALPACA_API_SECRET_KEY"];
     if (!keyId || !secret) return { status: "disconnected", bars: [], message: "Alpaca keys are not configured." };
     const start = new Date(Date.now() - 200 * 86400000).toISOString().slice(0, 10);
-    const url = `https://data.alpaca.markets/v2/stocks/${encodeURIComponent(data.symbol)}/bars?timeframe=1Day&limit=120&feed=iex&start=${start}`;
+    const url = `https://data.alpaca.markets/v2/stocks/${encodeURIComponent(data.symbol)}/bars?timeframe=1Day&limit=120&feed=iex&start=${start}&sort=desc`;
     try {
       const res = await fetch(url, { headers: { "APCA-API-KEY-ID": keyId, "APCA-API-SECRET-KEY": secret } });
       if (!res.ok) {
@@ -21,7 +21,7 @@ export const getBars = createServerFn({ method: "GET" })
         return { status: res.status === 401 || res.status === 403 ? "disconnected" : "error", bars: [], message: `Alpaca returned ${res.status}` };
       }
       const json = (await res.json()) as { bars?: { t: string; o: number; h: number; l: number; c: number; v: number }[] | null };
-      const bars = (json.bars ?? []).map(({ t, o, h, l, c, v }) => ({ t, o, h, l, c, v }));
+      const bars = (json.bars ?? []).map(({ t, o, h, l, c, v }) => ({ t, o, h, l, c, v })).reverse();
       return { status: "ok", bars };
     } catch (e) {
       console.error("Alpaca bars error", e);
@@ -36,7 +36,7 @@ export const getIntradayBars = createServerFn({ method: "GET" })
     const secret = process.env["ALPACA_API_SECRET_KEY"];
     if (!keyId || !secret) return { status: "disconnected", bars: [], message: "Alpaca keys are not configured." };
     const start = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
-    const url = `https://data.alpaca.markets/v2/stocks/${encodeURIComponent(data.symbol)}/bars?timeframe=5Min&limit=78&feed=iex&start=${start}`;
+    const url = `https://data.alpaca.markets/v2/stocks/${encodeURIComponent(data.symbol)}/bars?timeframe=5Min&limit=78&feed=iex&start=${start}&sort=desc`;
     try {
       const res = await fetch(url, { headers: { "APCA-API-KEY-ID": keyId, "APCA-API-SECRET-KEY": secret } });
       if (!res.ok) {
@@ -44,7 +44,7 @@ export const getIntradayBars = createServerFn({ method: "GET" })
         return { status: res.status === 401 || res.status === 403 ? "disconnected" : "error", bars: [], message: `Alpaca returned ${res.status}` };
       }
       const json = (await res.json()) as { bars?: { t: string; o: number; h: number; l: number; c: number; v: number }[] | null };
-      const bars = (json.bars ?? []).map(({ t, o, h, l, c, v }) => ({ t, o, h, l, c, v }));
+      const bars = (json.bars ?? []).map(({ t, o, h, l, c, v }) => ({ t, o, h, l, c, v })).reverse();
       return { status: "ok", bars };
     } catch (e) {
       console.error("Alpaca intraday bars error", e);

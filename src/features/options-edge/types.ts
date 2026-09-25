@@ -26,7 +26,7 @@ export interface NewsItem {
 export interface EarningsData {
   date: string;
   days: number;
-  session: "Before market" | "After market";
+  session: "Before market" | "After market" | "Time not confirmed";
   estimatedEps: string;
   history: { quarter: string; reaction: number; result: string }[];
 }

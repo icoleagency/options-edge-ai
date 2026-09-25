@@ -1,6 +1,6 @@
 export type Lesson = { id: string; title: string; body: string; takeaway: string };
 
-export const lessons: Lesson[] = [
+export const dayTradeLessons: Lesson[] = [
   { id: "what-is-option", title: "What an option actually is", body: "An option is a contract that gives you the right, but not the obligation, to buy (Call) or sell (Put) 100 shares at a set price (the strike) before a set date (the expiry). You pay a premium for that right.", takeaway: "Buying an option means paying a premium for a time-limited bet on direction." },
   { id: "calls-puts", title: "Calls vs. Puts", body: "A Call gains value when the stock rises above the strike. A Put gains value when the stock falls below the strike. Both lose value as time passes if the move doesn't happen.", takeaway: "Calls = bullish view, Puts = bearish view. Both need the move to happen in time." },
   { id: "time-decay", title: "Time decay (Theta)", body: "Every day an option loses some value simply because time is running out. This decay speeds up in the final weeks before expiry, especially for short-dated contracts.", takeaway: "Time works against option buyers — being right too slowly can still lose money." },

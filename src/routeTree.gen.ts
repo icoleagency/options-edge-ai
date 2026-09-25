@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyzerRouteImport } from './routes/analyzer'
 import { Route as EarningsRouteImport } from './routes/earnings'
+import { Route as JournalRouteImport } from './routes/journal'
 import { Route as LearningRouteImport } from './routes/learning'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as OptionsLabRouteImport } from './routes/options-lab'
@@ -31,6 +32,11 @@ const AnalyzerRoute = AnalyzerRouteImport.update({
 const EarningsRoute = EarningsRouteImport.update({
   id: '/earnings',
   path: '/earnings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearningRoute = LearningRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyzer': typeof AnalyzerRoute
   '/earnings': typeof EarningsRoute
+  '/journal': typeof JournalRoute
   '/learning': typeof LearningRoute
   '/news': typeof NewsRoute
   '/options-lab': typeof OptionsLabRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyzer': typeof AnalyzerRoute
   '/earnings': typeof EarningsRoute
+  '/journal': typeof JournalRoute
   '/learning': typeof LearningRoute
   '/news': typeof NewsRoute
   '/options-lab': typeof OptionsLabRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analyzer': typeof AnalyzerRoute
   '/earnings': typeof EarningsRoute
+  '/journal': typeof JournalRoute
   '/learning': typeof LearningRoute
   '/news': typeof NewsRoute
   '/options-lab': typeof OptionsLabRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analyzer'
     | '/earnings'
+    | '/journal'
     | '/learning'
     | '/news'
     | '/options-lab'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analyzer'
     | '/earnings'
+    | '/journal'
     | '/learning'
     | '/news'
     | '/options-lab'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analyzer'
     | '/earnings'
+    | '/journal'
     | '/learning'
     | '/news'
     | '/options-lab'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyzerRoute: typeof AnalyzerRoute
   EarningsRoute: typeof EarningsRoute
+  JournalRoute: typeof JournalRoute
   LearningRoute: typeof LearningRoute
   NewsRoute: typeof NewsRoute
   OptionsLabRoute: typeof OptionsLabRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/earnings'
       fullPath: '/earnings'
       preLoaderRoute: typeof EarningsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learning': {
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyzerRoute: AnalyzerRoute,
   EarningsRoute: EarningsRoute,
+  JournalRoute: JournalRoute,
   LearningRoute: LearningRoute,
   NewsRoute: NewsRoute,
   OptionsLabRoute: OptionsLabRoute,

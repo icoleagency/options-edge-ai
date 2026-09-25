@@ -1,5 +1,4 @@
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis } from "recharts";
-import { BellRing, BrainCircuit, Check, ChevronDown, ChevronUp, Expand, LineChart, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp, Webhook } from "lucide-react";
+import { BellRing, BrainCircuit, Check, ChevronDown, ChevronUp, Expand, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp, Webhook } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useBars } from "./use-bars";
-import { companies, getCompany, getEarnings, getNews, makeChartData, marketSymbols } from "./data";
+import { companies, getCompany, getEarnings, getNews, marketSymbols } from "./data";
 import { useDashboard } from "./dashboard-context";
 import { Change, DataState, Panel, SampleBadge, StatusDot, Why } from "./ui";
 import { AITradeSetupPanel } from "./trade-setup-panel";
 import { OptionsContractLab } from "./options-contract-lab";
+import { TradingViewChart } from "./tradingview-chart";
 
 export function MarketOverviewStrip() {
   const { preferences } = useDashboard();

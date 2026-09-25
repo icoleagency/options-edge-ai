@@ -43,8 +43,9 @@ export function TradingViewChart({
     let cancelled = false;
     loadTradingView()
       .then(() => {
-        if (cancelled || !containerRef.current) return;
-        containerRef.current.innerHTML = "";
+        const container = document.getElementById(idRef.current);
+        if (!container) return;
+        container.innerHTML = "";
         // @ts-expect-error TradingView global is injected by the external script
         new window.TradingView.widget({
           container_id: idRef.current,

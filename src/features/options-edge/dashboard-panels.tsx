@@ -1,5 +1,4 @@
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis } from "recharts";
-import { BellRing, BrainCircuit, Check, ChevronDown, ChevronUp, Expand, LineChart, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp, Webhook } from "lucide-react";
+import { BellRing, BrainCircuit, Check, ChevronDown, ChevronUp, Expand, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp, Webhook } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useBars } from "./use-bars";
-import { companies, getCompany, getEarnings, getNews, makeChartData, marketSymbols } from "./data";
+import { companies, getCompany, getEarnings, getNews, marketSymbols } from "./data";
 import { useDashboard } from "./dashboard-context";
 import { Change, DataState, Panel, SampleBadge, StatusDot, Why } from "./ui";
 import { AITradeSetupPanel } from "./trade-setup-panel";
 import { OptionsContractLab } from "./options-contract-lab";
+import { TradingViewChart } from "./tradingview-chart";
 
 export function MarketOverviewStrip() {
   const { preferences } = useDashboard();
@@ -40,16 +40,15 @@ export function TradingViewChartPanel() {
   const { selectedSymbol, preferences, updatePreferences } = useDashboard();
   const company = getCompany(selectedSymbol);
   const live = useBars(selectedSymbol);
-  const data = makeChartData(selectedSymbol);
   const [chartType, setChartType] = useState("Area");
   const [expanded, setExpanded] = useState(false);
   const [indicators, setIndicators] = useState(["Volume"]);
   const [drawingTools, setDrawingTools] = useState(false);
   const timeframes = ["1m", "5m", "15m", "30m", "1H", "4H", "1D", "1W"];
-  return <Panel title="CHART WORKSPACE" eyebrow="TradingView-ready · simulated history" className={cn(expanded && "fixed inset-3 z-50 shadow-2xl")} action={<div className="flex items-center gap-1"><SampleBadge /><Button variant="ghost" size="icon" className="size-7" aria-label="Chart options"><MoreHorizontal className="size-3.5" /></Button></div>}>
+  return <Panel title="CHART WORKSPACE" eyebrow="TradingView · live chart" className={cn(expanded && "fixed inset-3 z-50 shadow-2xl")} action={<div className="flex items-center gap-1"><SampleBadge /><Button variant="ghost" size="icon" className="size-7" aria-label="Chart options"><MoreHorizontal className="size-3.5" /></Button></div>}>
     <div className="flex flex-wrap items-end gap-4 border-b border-border px-4 py-4"><div className="min-w-48"><div className="flex items-center gap-2"><h2 className="text-xl font-bold">{company.symbol}</h2><span className="text-xs text-muted-foreground">{company.name}</span></div><div className="mt-2 flex items-end gap-3">{live.quote ? <><p className="font-mono text-3xl font-semibold tabular-nums">${live.quote.price.toFixed(2)}</p><Change value={live.quote.change} className="mb-1 text-sm" /><span className="mb-1 inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wider text-positive"><StatusDot status="connected" />Real-time (IEX)</span></> : <p className="font-mono text-sm text-muted-foreground">{live.state === "loading" ? "Loading price…" : live.state === "empty" ? "No bars returned" : live.state === "error" ? "Price unavailable (provider error)" : "Live provider not connected"}</p>}</div></div><div className="ml-auto"><Select value={chartType} onValueChange={setChartType}><SelectTrigger className="h-8 w-24 text-[10px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Area">Area</SelectItem><SelectItem value="Bars">Bars</SelectItem></SelectContent></Select></div></div>
     <div className="flex flex-wrap items-center gap-1 border-b border-border bg-secondary/20 px-3 py-2"><div className="flex flex-wrap border border-border bg-background">{timeframes.map((time) => <Button key={time} type="button" variant="ghost" size="sm" onClick={() => updatePreferences({ timeframe: time })} className={cn("h-7 min-w-8 rounded-none px-2 text-[10px]", preferences.timeframe === time && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground")}>{time}</Button>)}</div><Button variant={indicators.includes("SMA 20") ? "secondary" : "ghost"} size="sm" className="h-7 text-[10px]" onClick={() => setIndicators((current) => current.includes("SMA 20") ? current.filter((item) => item !== "SMA 20") : [...current, "SMA 20"])}><SlidersHorizontal className="size-3" />Indicators</Button><Button variant={drawingTools ? "secondary" : "ghost"} size="sm" className="h-7 text-[10px]" onClick={() => setDrawingTools((value) => !value)}><PencilRuler className="size-3" />Drawing tools</Button><Button variant="ghost" size="sm" className="ml-auto h-7 text-[10px]" onClick={() => setExpanded(!expanded)}><Expand className="size-3" />Fullscreen</Button></div>
-    <div className={cn("relative h-[440px] p-3", expanded && "h-[calc(100vh-12rem)]")}><div className="absolute left-5 top-4 z-10 flex gap-2">{indicators.map((item) => <span key={item} className="border border-border bg-background/85 px-1.5 py-0.5 text-[9px] text-muted-foreground">{item}</span>)}{drawingTools && <span className="border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[9px] text-primary">Drawing mode preview</span>}</div><ResponsiveContainer width="100%" height="100%">{chartType === "Area" ? <AreaChart data={data} margin={{ top: 18, right: 8, bottom: 0, left: 0 }}><defs><linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.28}/><stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0}/></linearGradient></defs><CartesianGrid stroke="var(--color-border)" strokeDasharray="2 5" vertical={false}/><XAxis dataKey="time" hide/><YAxis domain={["dataMin - 2", "dataMax + 2"]} orientation="right" tick={{ fill: "var(--color-muted-foreground)", fontSize: 10 }} axisLine={false} tickLine={false} width={48}/><ChartTooltip contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", fontSize: 11 }} formatter={(value) => [`$${value}`, "Simulated price"]}/><Area type="monotone" dataKey="price" stroke="var(--color-primary)" strokeWidth={1.8} fill="url(#priceFill)" isAnimationActive={false} /></AreaChart> : <BarChart data={data}><CartesianGrid stroke="var(--color-border)" strokeDasharray="2 5" vertical={false}/><XAxis dataKey="time" hide/><YAxis orientation="right" tick={{ fill: "var(--color-muted-foreground)", fontSize: 10 }} axisLine={false} tickLine={false}/><ChartTooltip contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", fontSize: 11 }}/><Bar dataKey="price" fill="var(--color-primary)" isAnimationActive={false} /></BarChart>}</ResponsiveContainer><div className="pointer-events-none absolute bottom-4 left-5 flex items-center gap-2 text-[9px] text-muted-foreground"><LineChart className="size-3" />TradingView connection coming soon · no live feed</div></div>
+    <div className={cn("relative h-[440px] p-3", expanded && "h-[calc(100vh-12rem)]")}><div className="absolute left-5 top-14 z-10 flex gap-2">{indicators.map((item) => <span key={item} className="border border-border bg-background/85 px-1.5 py-0.5 text-[9px] text-muted-foreground">{item}</span>)}{drawingTools && <span className="border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[9px] text-primary">Drawing mode preview</span>}</div><TradingViewChart symbol={selectedSymbol} interval={preferences.timeframe} /></div>
   </Panel>;
 }
 

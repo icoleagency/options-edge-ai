@@ -1,4 +1,4 @@
-import { BellRing, BrainCircuit, Check, ChevronDown, ChevronUp, Expand, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp, Webhook } from "lucide-react";
+import { BellRing, ChevronDown, ChevronUp, Expand, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,17 +11,12 @@ import { useCompanyNews, useEarningsInfo } from "./use-finnhub";
 import { useDashboard } from "./dashboard-context";
 import { Change, DataState, Panel, SampleBadge, StatusDot, Why } from "./ui";
 import { AITradeSetupPanel } from "./trade-setup-panel";
-import { OptionsContractLab } from "./options-contract-lab";
 import { TradingViewChart } from "./tradingview-chart";
 
 export function MarketOverviewStrip() {
   const { preferences } = useDashboard();
   if (!preferences.visiblePanels.overview) return null;
   return <section aria-label="Market overview" className="grid border-y border-border bg-card sm:grid-cols-5">{marketSymbols.map((symbol, index) => { const item = getCompany(symbol); return <div key={symbol} className={cn("flex min-h-16 items-center justify-between gap-3 px-4 py-2", index > 0 && "border-t border-border sm:border-l sm:border-t-0")}><div><div className="flex items-center gap-2"><b className="text-xs">{item.symbol}</b><SampleBadge /></div><p className="mt-1 font-mono text-xs tabular-nums">{item.price.toFixed(2)}</p></div><Change value={item.change} /></div>; })}</section>;
-}
-
-export function MarketRegimeIndicator() {
-  return <section aria-label="Market regime" className="flex flex-wrap items-center gap-3 border border-border bg-card px-3 py-2"><div><p className="text-[9px] font-semibold uppercase text-muted-foreground">Market regime</p><div className="mt-0.5 flex items-center gap-2"><span className="size-1.5 rounded-full bg-positive" /><strong className="text-xs text-positive">Risk-On</strong><SampleBadge>Simulated</SampleBadge></div></div><div className="ml-auto max-w-lg text-right text-[9px] leading-relaxed text-muted-foreground">Prototype classification based on sample SPY, QQQ, and VIX conditions. Live broad-market data is not connected.</div></section>;
 }
 
 export function WatchlistPanel({ management = false }: { management?: boolean }) {
@@ -69,17 +64,7 @@ export function AITradeAnalyzerPanel({ full = false }: { full?: boolean }) {
   return <AITradeSetupPanel full={full} />;
 }
 
-export function AlertsPanel() {
-  const { selectedSymbol } = useDashboard();
-  const alerts = [
-    { time: "10:42 AM", type: "TradingView Alert", trigger: "Price crossed sample resistance", status: "Triggered", ai: true, tone: "positive" },
-    { time: "09:58 AM", type: "Volume Alert", trigger: "Relative volume threshold observed", status: "Review", ai: false, tone: "warning" },
-    { time: "Yesterday", type: "Catalyst Alert", trigger: "Sample earnings reminder created", status: "Scheduled", ai: true, tone: "neutral" },
-  ] as const;
-  return <Panel title="Alert Center" eyebrow={`${selectedSymbol} · webhook-ready`} action={<SampleBadge>Simulated</SampleBadge>}><div className="divide-y divide-border">{alerts.map((alert) => <div key={`${alert.time}-${alert.trigger}`} className="grid grid-cols-[auto_1fr_auto] gap-3 p-3"><span className={cn("mt-1.5 size-1.5 rounded-full", alert.tone === "positive" ? "bg-positive" : alert.tone === "warning" ? "bg-warning" : "bg-muted-foreground")} /><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><b className="text-[10px]">{selectedSymbol}</b><span className="text-[9px] text-muted-foreground">{alert.type}</span></div><p className="mt-1 text-[11px] font-medium">{alert.trigger}</p><p className="mt-1 text-[9px] text-muted-foreground">{alert.time} · {alert.status}</p></div><div className={cn("flex h-fit items-center gap-1 text-[8px] uppercase", alert.ai ? "text-primary" : "text-muted-foreground")}>{alert.ai ? <BrainCircuit className="size-3" /> : <Check className="size-3" />}{alert.ai ? "AI analysis available" : "Awaiting analysis"}</div></div>)}</div><div className="flex items-center gap-2 border-t border-border bg-secondary/30 px-3 py-2.5 text-[9px] text-muted-foreground"><Webhook className="size-3 text-primary" />Ready for future verified TradingView webhook events</div></Panel>;
-}
-
 export function Dashboard() {
   const { preferences } = useDashboard();
-  return <div><MarketOverviewStrip /><div className="p-3 md:p-4"><div className="mb-3 flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between"><div><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">Workspace 01</p><h1 className="mt-1 text-xl font-semibold">Trading Dashboard</h1></div><div className="flex min-w-0 flex-1 flex-col gap-2 xl:max-w-2xl"><MarketRegimeIndicator /><div className="hidden items-center justify-end gap-2 text-[10px] text-muted-foreground sm:flex"><BellRing className="size-3" />Sample intelligence · prototype only</div></div></div><div className="grid min-w-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)_300px]"><div className="xl:col-start-1 xl:row-span-2 xl:row-start-1"><WatchlistPanel /></div><div className="xl:col-start-2 xl:row-start-1"><TradingViewChartPanel /></div>{preferences.visiblePanels.news && <div className="xl:col-start-3 xl:row-span-2 xl:row-start-1"><MarketNewsPanel /></div>}{preferences.visiblePanels.earnings && <div className="xl:col-start-2 xl:row-start-2"><EarningsMonitorPanel /></div>}{preferences.visiblePanels.alerts && <div className="xl:col-start-1 xl:row-start-3"><AlertsPanel /></div>}{preferences.visiblePanels.analyzer && <div className="xl:col-span-2 xl:col-start-2 xl:row-start-3"><AITradeAnalyzerPanel /></div>}<div className="xl:col-span-3"><OptionsContractLab /></div></div></div></div>;
+  return <div><MarketOverviewStrip /><div className="p-3 md:p-4"><div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">Workspace 01</p><h1 className="mt-1 text-xl font-semibold">Trading Dashboard</h1></div><div className="hidden items-center gap-2 text-[10px] text-muted-foreground sm:flex"><BellRing className="size-3" />Sample intelligence · prototype only</div></div><div className="grid min-w-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)_300px]"><div className="xl:col-start-1 xl:row-span-2 xl:row-start-1"><WatchlistPanel /></div><div className="xl:col-start-2 xl:row-start-1"><TradingViewChartPanel /></div>{preferences.visiblePanels.news && <div className="xl:col-start-3 xl:row-span-2 xl:row-start-1"><MarketNewsPanel /></div>}{preferences.visiblePanels.earnings && <div className="xl:col-start-2 xl:row-start-2"><EarningsMonitorPanel /></div>}{preferences.visiblePanels.analyzer && <div className="xl:col-span-3"><AITradeAnalyzerPanel /></div>}</div></div></div>;
 }

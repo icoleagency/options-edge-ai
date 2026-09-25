@@ -17,7 +17,7 @@ interface DashboardContextValue {
 
 const defaultPreferences: DashboardPreferences = {
   timeframe: "1D", notifications: true, compactMode: true,
-  visiblePanels: { news: true, earnings: true, analyzer: true, overview: true, alerts: true },
+  visiblePanels: { news: true, earnings: true, analyzer: true, overview: true },
 };
 
 // Keep a single context instance across hot-module reloads so consumers that
@@ -45,7 +45,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         if (parsed.selectedSymbol) setSelectedSymbol(parsed.selectedSymbol);
         if (parsed.preferences) {
           const allowedTimeframes = ["1m", "5m", "15m", "30m", "1H", "4H", "1D", "1W"];
-          setPreferences({ ...defaultPreferences, ...parsed.preferences, timeframe: allowedTimeframes.includes(parsed.preferences.timeframe) ? parsed.preferences.timeframe : defaultPreferences.timeframe, visiblePanels: { ...defaultPreferences.visiblePanels, ...parsed.preferences.visiblePanels } });
+          const storedPanels = parsed.preferences.visiblePanels;
+          setPreferences({ ...defaultPreferences, ...parsed.preferences, timeframe: allowedTimeframes.includes(parsed.preferences.timeframe) ? parsed.preferences.timeframe : defaultPreferences.timeframe, visiblePanels: {
+            news: storedPanels?.news ?? defaultPreferences.visiblePanels.news,
+            earnings: storedPanels?.earnings ?? defaultPreferences.visiblePanels.earnings,
+            analyzer: storedPanels?.analyzer ?? defaultPreferences.visiblePanels.analyzer,
+            overview: storedPanels?.overview ?? defaultPreferences.visiblePanels.overview,
+          } });
         }
       }
     } catch { /* Invalid stored prototype preferences fall back safely. */ }

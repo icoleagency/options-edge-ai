@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Check, CircleAlert, Minus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getCompany } from "./data";
+import { useCompanyNews, useEarningsInfo } from "./use-finnhub";
 import { useDashboard } from "./dashboard-context";
 import type { SetupDetail } from "./types";
 import { DataState, Panel, SampleBadge, Term, Why } from "./ui";
@@ -41,8 +41,10 @@ function toPanel(rec: TradeRecommendation) {
 export function AITradeSetupPanel({ full = false }: { full?: boolean }) {
   const { selectedSymbol } = useDashboard();
   const { bars, state } = useBars(selectedSymbol);
-  const daysToEarnings = getCompany(selectedSymbol).earningsDays;
-  const rec = useMemo(() => (bars.length ? computeRecommendation(bars, daysToEarnings != null ? { daysToEarnings } : {}) : null), [bars, daysToEarnings]);
+  const { earnings } = useEarningsInfo(selectedSymbol);
+  const { sentiment } = useCompanyNews(selectedSymbol);
+  const daysToEarnings = earnings?.days;
+  const rec = useMemo(() => (bars.length ? computeRecommendation(bars, { ...(daysToEarnings != null ? { daysToEarnings } : {}), ...(sentiment != null ? { newsSentiment: sentiment } : {}) }) : null), [bars, daysToEarnings, sentiment]);
   const setup = rec ? toPanel(rec) : null;
   const biasTone = setup?.bias === "Bullish" ? "text-positive" : setup?.bias === "Bearish" ? "text-negative" : "text-warning";
   return <Panel title="AI TRADE SETUP" eyebrow={`${selectedSymbol} · daily bars · Real-time (IEX)`} className={cn(full && "mx-auto max-w-7xl")} action={setup ? <SampleBadge>{setup.verdict}</SampleBadge> : <SampleBadge>No setup</SampleBadge>}>

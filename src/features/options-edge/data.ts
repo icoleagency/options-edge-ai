@@ -21,7 +21,8 @@ export const companies: Company[] = [
 export const defaultWatchlist = ["AAPL", "BLK", "AMZN", "GOOGL", "META", "MSFT", "NVDA", "PLTR", "SPY"];
 export const marketSymbols = ["SPY", "QQQ", "DIA", "IWM", "VIX"];
 const fallbackCompany: Company = { symbol: "SPY", name: "SPDR S&P 500 ETF", price: 663.70, change: 0.24, spark: [46,47,49,48,50,51,50,52,54,55] };
-export const getCompany = (symbol: string): Company => companies.find((c) => c.symbol === symbol) ?? fallbackCompany;
+export const getCompany = (symbol: string): Company => companies.find((c) => c.symbol === symbol) ?? { ...fallbackCompany, symbol, name: "" };
+export const knownName = (symbol: string) => companies.find((c) => c.symbol === symbol)?.name ?? "";
 
 const generalNews = [
   { headline: "Investors assess rate outlook as technology shares lead", category: "Macro" as const, impact: "High" as const, summary: "Treasury yields and policy expectations remain key inputs for growth-stock valuations.", whyItMatters: "Changes in Treasury yields can affect valuation expectations for growth-oriented companies and may influence the broader trend." },

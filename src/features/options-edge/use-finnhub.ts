@@ -21,10 +21,10 @@ export function useEarningsInfo(symbol: string) {
   return { earnings, state };
 }
 
-export function useQuote(symbol: string) {
+export function useQuote(symbol: string): { price: number; changePct: number | null } | null {
   const fn = useServerFn(getQuote);
   const q = useQuery({ queryKey: ["finnhub-quote", symbol], queryFn: () => fn({ data: { symbol } }), staleTime: 60_000, refetchInterval: 90_000, retry: false });
-  const d = q.data; return d && d.status === "ok" ? d : null;
+  const d = q.data; return d && d.status === "ok" ? { price: d.price, changePct: d.changePct } : null;
 }
 
 export function useSymbolSearch(query: string) {

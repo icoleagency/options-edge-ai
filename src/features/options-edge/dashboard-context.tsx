@@ -8,7 +8,8 @@ interface DashboardContextValue {
   preferences: DashboardPreferences;
   hydrated: boolean;
   setSelectedSymbol: (symbol: string) => void;
-  addTicker: (symbol: string) => void;
+  names: Record<string, string>;
+  addTicker: (symbol: string, name?: string) => void;
   removeTicker: (symbol: string) => void;
   moveTicker: (symbol: string, direction: -1 | 1) => void;
   updatePreferences: (patch: Partial<DashboardPreferences>) => void;
@@ -34,13 +35,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [watchlist, setWatchlist] = useState(defaultWatchlist);
   const [selectedSymbol, setSelectedSymbol] = useState("NVDA");
   const [preferences, setPreferences] = useState(defaultPreferences);
+  const [names, setNames] = useState<Record<string, string>>({});
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored) as { watchlist?: string[]; selectedSymbol?: string; preferences?: DashboardPreferences };
+        const parsed = JSON.parse(stored) as { watchlist?: string[]; selectedSymbol?: string; preferences?: DashboardPreferences; names?: Record<string, string> };
+        if (parsed.names && typeof parsed.names === "object") setNames(parsed.names);
         if (parsed.watchlist?.length) setWatchlist(parsed.watchlist);
         if (parsed.selectedSymbol) setSelectedSymbol(parsed.selectedSymbol);
         if (parsed.preferences) {
@@ -60,12 +63,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ watchlist, selectedSymbol, preferences }));
-  }, [hydrated, watchlist, selectedSymbol, preferences]);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ watchlist, selectedSymbol, preferences, names }));
+  }, [hydrated, watchlist, selectedSymbol, preferences, names]);
 
   const value = useMemo<DashboardContextValue>(() => ({
     watchlist, selectedSymbol, preferences, hydrated, setSelectedSymbol,
-    addTicker: (symbol) => setWatchlist((current) => current.includes(symbol) ? current : [...current, symbol].slice(0, 15)),
+    names,
+    addTicker: (symbol, name) => { if (name) setNames((current) => current[symbol] === name ? current : { ...current, [symbol]: name }); setWatchlist((current) => current.includes(symbol) ? current : [...current, symbol].slice(0, 15)); },
     removeTicker: (symbol) => setWatchlist((current) => {
       const next = current.filter((item) => item !== symbol);
       if (selectedSymbol === symbol) setSelectedSymbol(next[0] ?? "SPY");
@@ -85,7 +89,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }),
     updatePreferences: (patch) => setPreferences((current) => ({ ...current, ...patch })),
     togglePanel: (panel) => setPreferences((current) => ({ ...current, visiblePanels: { ...current.visiblePanels, [panel]: !current.visiblePanels[panel] } })),
-  }), [watchlist, selectedSymbol, preferences, hydrated]);
+  }), [watchlist, selectedSymbol, preferences, hydrated, names]);
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
 }

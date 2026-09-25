@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getCompanyNews, getEarningsInfo } from "./finnhub.functions";
+import { useEffect, useState } from "react";
+import { getCompanyNews, getEarningsInfo, getQuote, searchSymbols } from "./finnhub.functions";
 
 export type LiveState = "loading" | "empty" | "disconnected" | "ok";
 
@@ -18,4 +19,19 @@ export function useEarningsInfo(symbol: string) {
   const earnings = q.data?.status === "ok" ? q.data.earnings : null;
   const state: LiveState = q.isLoading ? "loading" : q.isError || !q.data || q.data.status !== "ok" ? "disconnected" : earnings ? "ok" : "empty";
   return { earnings, state };
+}
+
+export function useQuote(symbol: string): { price: number; changePct: number | null } | null {
+  const fn = useServerFn(getQuote);
+  const q = useQuery({ queryKey: ["finnhub-quote", symbol], queryFn: () => fn({ data: { symbol } }), staleTime: 60_000, refetchInterval: 90_000, retry: false });
+  const d = q.data; return d && d.status === "ok" ? { price: d.price, changePct: d.changePct } : null;
+}
+
+export function useSymbolSearch(query: string) {
+  const fn = useServerFn(searchSymbols);
+  const [debounced, setDebounced] = useState(query.trim());
+  useEffect(() => { const t = setTimeout(() => setDebounced(query.trim()), 300); return () => clearTimeout(t); }, [query]);
+  const q = useQuery({ queryKey: ["finnhub-search", debounced.toUpperCase()], queryFn: () => fn({ data: { query: debounced } }), enabled: debounced.length > 0, staleTime: 10 * 60_000, retry: false });
+  const pending = query.trim().length > 0 && (debounced !== query.trim() || q.isFetching);
+  return { results: q.data?.status === "ok" ? q.data.results : [], loading: pending, disconnected: q.data?.status === "disconnected" || q.isError };
 }

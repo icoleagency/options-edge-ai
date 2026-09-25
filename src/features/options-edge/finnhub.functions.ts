@@ -92,3 +92,44 @@ export const getEarningsInfo = createServerFn({ method: "GET" })
       return { status: "disconnected", earnings: null, message: "Network error contacting Finnhub." };
     }
   });
+
+export type SymbolMatch = { symbol: string; description: string };
+export type SearchResult = { status: "ok"; results: SymbolMatch[] } | { status: "disconnected"; results: []; message: string };
+export type QuoteResult = { status: "ok"; price: number; changePct: number | null } | { status: "unavailable" };
+
+export const searchSymbols = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ query: z.string().trim().min(1).max(40) }).parse(d))
+  .handler(async ({ data }): Promise<SearchResult> => {
+    const key = process.env["FINNHUB_API_KEY"];
+    if (!key) return { status: "disconnected", results: [], message: "Finnhub key not configured." };
+    try {
+      const res = await fetch(`https://finnhub.io/api/v1/search?q=${encodeURIComponent(data.query)}&token=${key}`);
+      if (!res.ok) { console.error("Finnhub search failed", res.status); return { status: "disconnected", results: [], message: `Finnhub returned ${res.status}` }; }
+      const json = (await res.json()) as { result?: { symbol: string; displaySymbol?: string; description: string; type?: string }[] };
+      const all = (json.result ?? []).filter((r) => r.symbol && /^[A-Z]{1,5}$/.test(r.symbol));
+      const rank = (t?: string) => t === "Common Stock" ? 0 : t === "ETP" || t === "ETF" ? 1 : 2;
+      const seen = new Set<string>();
+      const results = all.sort((a, b) => rank(a.type) - rank(b.type)).filter((r) => !seen.has(r.symbol) && seen.add(r.symbol)).slice(0, 8).map((r) => ({ symbol: r.symbol, description: r.description }));
+      return { status: "ok", results };
+    } catch (e) {
+      console.error("Finnhub search error", e);
+      return { status: "disconnected", results: [], message: "Network error contacting Finnhub." };
+    }
+  });
+
+export const getQuote = createServerFn({ method: "GET" })
+  .inputValidator((d) => symbolSchema.parse(d))
+  .handler(async ({ data }): Promise<QuoteResult> => {
+    const key = process.env["FINNHUB_API_KEY"];
+    if (!key) return { status: "unavailable" };
+    try {
+      const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(data.symbol)}&token=${key}`);
+      if (!res.ok) { console.error("Finnhub quote failed", res.status); return { status: "unavailable" }; }
+      const q = (await res.json()) as { c?: number; dp?: number | null };
+      if (typeof q.c !== "number" || q.c <= 0) return { status: "unavailable" };
+      return { status: "ok", price: q.c, changePct: typeof q.dp === "number" ? q.dp : null };
+    } catch (e) {
+      console.error("Finnhub quote error", e);
+      return { status: "unavailable" };
+    }
+  });

@@ -70,5 +70,5 @@ export function TradingViewChart({
     };
   }, [symbol, interval]);
 
-  return <div id={idRef.current} ref={containerRef} className="h-full w-full" />;
+  return <div id={idRef.current} className="h-full w-full" />;
 }

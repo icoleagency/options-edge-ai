@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useBars } from "./use-bars";
-import { companies, getCompany, getEarnings, getNews, marketSymbols } from "./data";
+import { companies, getCompany, marketSymbols } from "./data";
+import { useCompanyNews, useEarningsInfo } from "./use-finnhub";
 import { useDashboard } from "./dashboard-context";
 import { Change, DataState, Panel, SampleBadge, StatusDot, Why } from "./ui";
 import { AITradeSetupPanel } from "./trade-setup-panel";

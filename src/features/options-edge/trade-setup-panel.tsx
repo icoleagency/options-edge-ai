@@ -6,7 +6,7 @@ import { useDashboard } from "./dashboard-context";
 import type { SetupDetail } from "./types";
 import { DataState, Panel, SampleBadge, Term, Why } from "./ui";
 import { computeRecommendation, type TradeRecommendation } from "./analysis/recommendation-engine";
-import { useBars } from "./use-bars";
+import { useBars, useIntradayBars } from "./use-bars";
 
 function toPanel(rec: TradeRecommendation) {
   const bull = rec.factors.filter((f) => f.direction === "bullish").map((f) => f.detail);

@@ -49,7 +49,7 @@ const CHECKS = [
 export function PreTradeChecklist() {
   const { selectedSymbol } = useDashboard();
   const { earnings } = useEarningsInfo(selectedSymbol);
-  const days = earnings?.daysToEarnings;
+  const days = earnings?.days;
   const [checked, setChecked] = useLocalState<number[]>("oe-checklist", []);
   const toggle = (i: number) => setChecked((c) => (c.includes(i) ? c.filter((x) => x !== i) : [...c, i]));
   return <Panel title="PRE-TRADE CHECKLIST" eyebrow={`${checked.length} of ${CHECKS.length} checked · ${selectedSymbol}`} action={<Button variant="ghost" size="sm" onClick={() => setChecked([])}><RotateCcw className="size-3.5" />Reset</Button>}>
@@ -83,7 +83,7 @@ export function RiskSizer() {
 }
 
 /* ---------------- Journal ---------------- */
-type Trade = { id: string; date: string; ticker: string; direction: "Call" | "Put"; strike: string; expiry: string; entry: string; contracts: string; thesis: string; exit?: string; outcome?: "" | "Win" | "Loss" | "Break-even" };
+type Trade = { id: string; date: string; ticker: string; direction: "Call" | "Put"; strike: string; expiry: string; entry: string; contracts: string; thesis: string; exit?: string; outcome?: "Win" | "Loss" | "Break-even" };
 const today = () => new Date().toLocaleDateString("en-CA");
 const emptyForm = (): Omit<Trade, "id"> => ({ date: today(), ticker: "", direction: "Call", strike: "", expiry: "", entry: "", contracts: "1", thesis: "" });
 
@@ -120,7 +120,7 @@ export function TradeJournal() {
           <td className="px-3 py-2 tabular-nums">{t.contracts}</td>
           <td className="max-w-[220px] px-3 py-2 text-muted-foreground">{t.thesis}</td>
           <td className="px-3 py-2"><Input className="h-7 w-20 text-xs" type="number" step="any" min="0" value={t.exit ?? ""} onChange={(e) => update(t.id, { exit: e.target.value })} aria-label="Exit premium" /></td>
-          <td className="px-3 py-2"><select className="h-7 border border-input bg-background px-1 text-xs" value={t.outcome ?? ""} onChange={(e) => update(t.id, { outcome: e.target.value as Trade["outcome"] })} aria-label="Outcome"><option value="">Open</option><option>Win</option><option>Loss</option><option>Break-even</option></select></td>
+          <td className="px-3 py-2"><select className="h-7 border border-input bg-background px-1 text-xs" value={t.outcome ?? ""} onChange={(e) => update(t.id, { outcome: e.target.value as Trade["outcome"] || undefined })} aria-label="Outcome"><option value="">Open</option><option>Win</option><option>Loss</option><option>Break-even</option></select></td>
           <td className="px-3 py-2"><Button variant="ghost" size="icon" className="size-7" aria-label="Delete trade" onClick={() => setTrades((x) => x.filter((y) => y.id !== t.id))}><Trash2 className="size-3.5 text-negative" /></Button></td>
         </tr>)}</tbody></table></div>}
     </Panel>

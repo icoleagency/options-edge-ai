@@ -24,7 +24,7 @@ export function useEarningsInfo(symbol: string) {
 export function useQuote(symbol: string) {
   const fn = useServerFn(getQuote);
   const q = useQuery({ queryKey: ["finnhub-quote", symbol], queryFn: () => fn({ data: { symbol } }), staleTime: 60_000, refetchInterval: 90_000, retry: false });
-  return q.data?.status === "ok" ? q.data : null;
+  const d = q.data; return d && d.status === "ok" ? d : null;
 }
 
 export function useSymbolSearch(query: string) {

@@ -35,7 +35,8 @@ export const getIntradayBars = createServerFn({ method: "GET" })
     const keyId = process.env["ALPACA_API_KEY_ID"];
     const secret = process.env["ALPACA_API_SECRET_KEY"];
     if (!keyId || !secret) return { status: "disconnected", bars: [], message: "Alpaca keys are not configured." };
-    const url = `https://data.alpaca.markets/v2/stocks/${encodeURIComponent(data.symbol)}/bars?timeframe=5Min&limit=78&feed=iex`;
+    const start = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+    const url = `https://data.alpaca.markets/v2/stocks/${encodeURIComponent(data.symbol)}/bars?timeframe=5Min&limit=78&feed=iex&start=${start}`;
     try {
       const res = await fetch(url, { headers: { "APCA-API-KEY-ID": keyId, "APCA-API-SECRET-KEY": secret } });
       if (!res.ok) {

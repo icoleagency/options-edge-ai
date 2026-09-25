@@ -94,7 +94,7 @@ export interface OptionContract {
 
 export interface DashboardPreferences {
   timeframe: string;
-  visiblePanels: Record<"news" | "earnings" | "analyzer" | "overview" | "alerts", boolean>;
+  visiblePanels: Record<"news" | "earnings" | "analyzer" | "overview", boolean>;
   notifications: boolean;
   compactMode: boolean;
 }

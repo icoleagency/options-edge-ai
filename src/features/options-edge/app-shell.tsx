@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BarChart3, Bell, BookOpen, BrainCircuit, CalendarDays, ChevronDown, CircleUserRound, FlaskConical, LayoutDashboard, Menu, Newspaper, NotebookPen, Search, Settings, Star, WifiOff, X } from "lucide-react";
+import { BarChart3, Bell, BookOpen, BrainCircuit, CalendarDays, ChevronDown, CircleUserRound, LayoutDashboard, Menu, Newspaper, NotebookPen, Search, Settings, Star, WifiOff, X } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,6 @@ const nav = [
   { to: "/news", label: "Market News", icon: Newspaper },
   { to: "/earnings", label: "Earnings Calendar", icon: CalendarDays },
   { to: "/analyzer", label: "AI Trade Analyzer", icon: BrainCircuit },
-  { to: "/options-lab", label: "Options Lab", icon: FlaskConical },
   { to: "/journal", label: "Trade Journal", icon: NotebookPen },
   { to: "/learning", label: "Learning Center", icon: BookOpen },
   { to: "/settings", label: "Settings", icon: Settings },

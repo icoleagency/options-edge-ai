@@ -1,4 +1,4 @@
-import { BellRing, ChevronDown, ChevronUp, Expand, MoreHorizontal, PencilRuler, Plus, Search, SlidersHorizontal, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { BellRing, ChevronDown, ChevronUp, Expand, MoreHorizontal, PencilRuler, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ function OverviewCell({ symbol, index }: { symbol: string; index: number }) {
 
 export function WatchlistPanel({ management = false }: { management?: boolean }) {
   const { watchlist, selectedSymbol, setSelectedSymbol, removeTicker, moveTicker, names } = useDashboard();
-  return <Panel title={management ? "Watchlist management" : "My Watchlist"} eyebrow={`${watchlist.length} of 15 symbols`} className={cn(!management && "h-full")} action={<SampleBadge />}>
+  return <Panel title={management ? "Watchlist management" : "My Watchlist"} eyebrow={`${watchlist.length} of 15 symbols`} className={cn(!management && "h-full")} action={<SampleBadge>Live (Finnhub)</SampleBadge>}>
     <div className="border-b border-border p-3"><SymbolSearch variant="watchlist" /></div>
     <div className={cn("overflow-y-auto", management ? "max-h-[580px]" : "max-h-[560px]")}>{watchlist.map((symbol, index) => { const item = getCompany(symbol); const name = names[symbol] || knownName(symbol); const selected = selectedSymbol === symbol; return <div key={symbol} role="button" tabIndex={0} onClick={() => setSelectedSymbol(symbol)} onKeyDown={(event) => { if (event.key === "Enter") setSelectedSymbol(symbol); }} className={cn("group grid min-h-[59px] cursor-pointer grid-cols-[1fr_auto] items-center gap-2 border-b border-border px-3 py-2 outline-none transition-colors focus-visible:ring-1 focus-visible:ring-ring", selected ? "border-l-2 border-l-primary bg-primary/8" : "border-l-2 border-l-transparent hover:bg-accent/60")}>
       <div className="min-w-0"><div className="flex items-center gap-2"><b className="text-xs">{symbol}</b>{item.name && item.earningsDays && item.earningsDays <= 18 && <span className="rounded-sm bg-warning/10 px-1 py-0.5 text-[8px] font-bold text-warning">E {item.earningsDays}D</span>}</div><p className="mt-1 truncate text-[10px] text-muted-foreground">{name || "—"}</p></div>

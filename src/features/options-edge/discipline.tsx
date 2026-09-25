@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { lessons } from "./data/lessons";
+import { dayTradeLessons } from "./data/lessons";
 import { useDashboard } from "./dashboard-context";
 import { useEarningsInfo } from "./use-finnhub";
 import { useLocalState } from "./use-local-state";

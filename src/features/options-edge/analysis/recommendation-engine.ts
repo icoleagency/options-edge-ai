@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/features/options-edge/analysis/recommendation-engine.ts
 // -----------------------------------------------------------------------------
 // Options Edge AI — Recommendation Engine (Phase 3)

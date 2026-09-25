@@ -2,7 +2,7 @@
 // Real live chart via TradingView's free embeddable widget (no API key required).
 // Drop-in replacement for the simulated Recharts chart. Design/theme match Options Edge AI.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 const TV_SRC = "https://s3.tradingview.com/tv.js";
 let tvPromise: Promise<void> | null = null;
@@ -36,8 +36,8 @@ export function TradingViewChart({
   symbol: string;
   interval: string;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const idRef = useRef(`tv_${Math.random().toString(36).slice(2)}`);
+  const reactId = useId();
+  const idRef = useRef(`tv_${reactId.replace(/[^a-zA-Z0-9]/g, "")}`);
 
   useEffect(() => {
     let cancelled = false;

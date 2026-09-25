@@ -42,7 +42,7 @@ export function AITradeSetupPanel({ full = false }: { full?: boolean }) {
   const { selectedSymbol } = useDashboard();
   const { bars, state } = useBars(selectedSymbol);
   const daysToEarnings = getCompany(selectedSymbol).earningsDays;
-  const rec = useMemo(() => (bars.length ? computeRecommendation(bars, { daysToEarnings }) : null), [bars, daysToEarnings]);
+  const rec = useMemo(() => (bars.length ? computeRecommendation(bars, daysToEarnings != null ? { daysToEarnings } : {}) : null), [bars, daysToEarnings]);
   const setup = rec ? toPanel(rec) : null;
   const biasTone = setup?.bias === "Bullish" ? "text-positive" : setup?.bias === "Bearish" ? "text-negative" : "text-warning";
   return <Panel title="AI TRADE SETUP" eyebrow={`${selectedSymbol} · daily bars · Real-time (IEX)`} className={cn(full && "mx-auto max-w-7xl")} action={setup ? <SampleBadge>{setup.verdict}</SampleBadge> : <SampleBadge>No setup</SampleBadge>}>

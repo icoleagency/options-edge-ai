@@ -84,6 +84,11 @@ export interface TradeRecommendation {
   summary: string;
   /** Whether there were enough bars to trust the read. */
   hasEnoughData: boolean;
+  /**
+   * Probable price range over the next few days, from ATR × √time.
+   * A "where it usually travels" band — NOT a prediction of where it will go.
+   */
+  expectedRange: { days: number; low: number; high: number; move: number } | null;
   indicators: Indicators;
 }
 
@@ -412,6 +417,19 @@ export function computeRecommendation(
   if (!hasEnoughData) risks.unshift(`Only ${candles.length} bars available — not enough history for a reliable read.`);
   if (avgVolume != null && lastVolume / (avgVolume || 1) <= 0.6) risks.push("Thin volume can produce false breakouts.");
 
+  // ---- expected-range cone ----
+  // Volatility grows with the square root of time, so an N-day range ≈ ATR × √N.
+  // This is a probable band ("where it usually travels"), never a forecast.
+  const rangeDays = 5;
+  const expectedRange = atrVal != null
+    ? {
+        days: rangeDays,
+        move: +(atrVal * Math.sqrt(rangeDays)).toFixed(2),
+        low: +(price - atrVal * Math.sqrt(rangeDays)).toFixed(2),
+        high: +(price + atrVal * Math.sqrt(rangeDays)).toFixed(2),
+      }
+    : null;
+
   // ---- summary sentence ----
   let summary = buildSummary(lean, confidence, factors, earningsGuard, hasEnoughData);
   if (alignment === "aligned") summary += " Daily trend and intraday VWAP agree, which strengthens the read.";
@@ -429,6 +447,7 @@ export function computeRecommendation(
     risks,
     summary,
     hasEnoughData,
+    expectedRange,
     indicators: ind,
   };
 }

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { lessons } from "./data/lessons";
+import { dayTradeLessons } from "./data/lessons";
 import { useDashboard } from "./dashboard-context";
 import { useEarningsInfo } from "./use-finnhub";
 import { useLocalState } from "./use-local-state";
@@ -14,11 +14,11 @@ const fieldCls = "text-[10px] font-semibold uppercase tracking-wider text-muted-
 /* ---------------- Lessons ---------------- */
 export function LessonTrack() {
   const [done, setDone] = useLocalState<string[]>("oe-lessons-done", []);
-  const [open, setOpen] = useState<string | null>(lessons[0]?.id ?? null);
+  const [open, setOpen] = useState<string | null>(dayTradeLessons[0]?.id ?? null);
   const toggle = (id: string) => setDone((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]));
-  return <Panel title="DAY TRADE 101" eyebrow="Lesson track" action={<span className="text-xs font-semibold tabular-nums text-primary">{done.length} of {lessons.length} done</span>} className="mb-4">
-    <div className="h-1 bg-secondary"><div className="h-full bg-primary transition-all" style={{ width: `${(done.length / lessons.length) * 100}%` }} /></div>
-    <div className="divide-y divide-border">{lessons.map((l, i) => {
+  return <Panel title="DAY TRADE 101" eyebrow="Lesson track" action={<span className="text-xs font-semibold tabular-nums text-primary">{done.length} of {dayTradeLessons.length} done</span>} className="mb-4">
+    <div className="h-1 bg-secondary"><div className="h-full bg-primary transition-all" style={{ width: `${(done.length / dayTradeLessons.length) * 100}%` }} /></div>
+    <div className="divide-y divide-border">{dayTradeLessons.map((l, i) => {
       const isOpen = open === l.id; const isDone = done.includes(l.id);
       return <div key={l.id}>
         <button type="button" onClick={() => setOpen(isOpen ? null : l.id)} aria-expanded={isOpen} className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-accent/40">

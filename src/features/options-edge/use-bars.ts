@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getBars } from "./market-data.functions";
+import { getBars, getIntradayBars } from "./market-data.functions";
 
 export type BarsState = "loading" | "empty" | "error" | "disconnected" | "ok";
 

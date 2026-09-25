@@ -65,6 +65,13 @@ export function AITradeSetupPanel({ full = false }: { full?: boolean }) {
         <p className="mt-3 text-[10px] font-semibold uppercase text-muted-foreground">Evidence</p>
         <ul className="mt-2 space-y-1.5">{rec.factors.map((f) => <li key={f.key} className="flex gap-2 text-[10px] leading-relaxed"><span className={cn("mt-1 block size-1.5 shrink-0 rounded-full", f.direction === "bullish" ? "bg-positive" : f.direction === "bearish" ? "bg-negative" : "bg-muted-foreground")} /><span><b>{f.label}:</b> {f.detail}</span></li>)}</ul>
         <div className="mt-3 flex items-start gap-2 border border-warning/20 bg-warning/5 p-3 text-[10px] leading-relaxed text-muted-foreground"><CircleAlert className="mt-0.5 size-3.5 shrink-0 text-warning" /><span>{rec.summary}</span></div>
+        {rec.expectedRange && <div className="mt-3 border border-border bg-secondary/25 p-3">
+          <p className="text-[10px] font-semibold uppercase text-muted-foreground">Expected range</p>
+          <p className="mt-2 font-mono text-[11px] tabular-nums">Typical range next {rec.expectedRange.days} days: ${rec.expectedRange.low.toFixed(2)} – ${rec.expectedRange.high.toFixed(2)} (±${rec.expectedRange.move.toFixed(2)})</p>
+          <div className="relative mt-2 h-1.5 bg-secondary"><span className="absolute left-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary bg-background" /></div>
+          <div className="mt-1 flex justify-between font-mono text-[9px] tabular-nums text-muted-foreground"><span>${rec.expectedRange.low.toFixed(2)}</span><span>${rec.expectedRange.high.toFixed(2)}</span></div>
+          <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">A probable band from recent volatility (ATR), not a prediction of direction.</p>
+        </div>}
       </div>
     </div>
     <div className="grid lg:grid-cols-2"><SetupColumn detail={setup.call} /><SetupColumn detail={setup.put} className="border-t border-border lg:border-l lg:border-t-0" /></div>

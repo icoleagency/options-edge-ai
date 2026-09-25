@@ -120,7 +120,7 @@ export function TradeJournal() {
           <td className="px-3 py-2 tabular-nums">{t.contracts}</td>
           <td className="max-w-[220px] px-3 py-2 text-muted-foreground">{t.thesis}</td>
           <td className="px-3 py-2"><Input className="h-7 w-20 text-xs" type="number" step="any" min="0" value={t.exit ?? ""} onChange={(e) => update(t.id, { exit: e.target.value })} aria-label="Exit premium" /></td>
-          <td className="px-3 py-2"><select className="h-7 border border-input bg-background px-1 text-xs" value={t.outcome ?? ""} onChange={(e) => update(t.id, { outcome: e.target.value as Trade["outcome"] || undefined })} aria-label="Outcome"><option value="">Open</option><option>Win</option><option>Loss</option><option>Break-even</option></select></td>
+          <td className="px-3 py-2"><select className="h-7 border border-input bg-background px-1 text-xs" value={t.outcome ?? ""} onChange={(e) => update(t.id, { outcome: (e.target.value || undefined) as Trade["outcome"] } as Partial<Trade>)} aria-label="Outcome"><option value="">Open</option><option>Win</option><option>Loss</option><option>Break-even</option></select></td>
           <td className="px-3 py-2"><Button variant="ghost" size="icon" className="size-7" aria-label="Delete trade" onClick={() => setTrades((x) => x.filter((y) => y.id !== t.id))}><Trash2 className="size-3.5 text-negative" /></Button></td>
         </tr>)}</tbody></table></div>}
     </Panel>

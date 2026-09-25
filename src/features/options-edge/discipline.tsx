@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { dayTradeLessons } from "./data/dayTradeLessons";
+import { dayTradeLessons } from "./data/lessons";
 import { useDashboard } from "./dashboard-context";
 import { useEarningsInfo } from "./use-finnhub";
 import { useLocalState } from "./use-local-state";
@@ -13,7 +13,7 @@ const fieldCls = "text-[10px] font-semibold uppercase tracking-wider text-muted-
 
 /* ---------------- Lessons ---------------- */
 export function LessonTrack() {
-  const [done, setDone] = useLocalState<string[]>("oe-dayTradeLessons-done", []);
+  const [done, setDone] = useLocalState<string[]>("oe-lessons-done", []);
   const [open, setOpen] = useState<string | null>(dayTradeLessons[0]?.id ?? null);
   const toggle = (id: string) => setDone((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]));
   return <Panel title="DAY TRADE 101" eyebrow="Lesson track" action={<span className="text-xs font-semibold tabular-nums text-primary">{done.length} of {dayTradeLessons.length} done</span>} className="mb-4">

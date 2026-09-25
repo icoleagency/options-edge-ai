@@ -1,4 +1,3 @@
-// @ts-nocheck -- pure numeric engine; indexed access is bounds-checked by loop logic
 // src/features/options-edge/analysis/recommendation-engine.ts
 // -----------------------------------------------------------------------------
 // Options Edge AI — Recommendation Engine (Phase 3)
@@ -32,6 +31,8 @@ export interface RecommendationContext {
   daysToEarnings?: number;
   /** Net news sentiment for the symbol, roughly -1 (bearish) … +1 (bullish). */
   newsSentiment?: number;
+  /** Today's (or most recent session's) intraday bars, e.g. 5-min, for the VWAP / intraday read. */
+  intradayCandles?: Candle[];
 }
 
 export type Lean = "Call" | "Put" | "Wait";
@@ -60,6 +61,8 @@ export interface Indicators {
   lastVolume: number;
   support: number | null;
   resistance: number | null;
+  vwap: number | null;
+  intradayPrice: number | null;
 }
 
 export interface TradeRecommendation {
@@ -179,6 +182,22 @@ export function supportResistance(
   };
 }
 
+/**
+ * VWAP — the volume-weighted average price. Computed over the intraday session.
+ * Price above VWAP = buyers in control today; below = sellers. A day-trader staple.
+ */
+export function computeVWAP(candles: Candle[]): number | null {
+  if (!candles.length) return null;
+  let pv = 0;
+  let vol = 0;
+  for (const c of candles) {
+    const typical = (c.h + c.l + c.c) / 3;
+    pv += typical * c.v;
+    vol += c.v;
+  }
+  return vol > 0 ? pv / vol : null;
+}
+
 /* --------------------------------- engine ---------------------------------- */
 
 const MIN_BARS = 30; // below this, we don't trust the read
@@ -203,6 +222,8 @@ export function computeIndicators(candles: Candle[]): Indicators {
     lastVolume: candles[candles.length - 1]?.v ?? 0,
     support: sr.support,
     resistance: sr.resistance,
+    vwap: null,
+    intradayPrice: null,
   };
 }
 
@@ -304,10 +325,41 @@ export function computeRecommendation(
     }
   }
 
+  // 8) INTRADAY read — VWAP + intraday relative volume (day-trading signals)
+  const intraday = ctx.intradayCandles;
+  if (intraday && intraday.length >= 5) {
+    const vwap = computeVWAP(intraday);
+    const iPrice = intraday[intraday.length - 1].c;
+    ind.vwap = vwap;
+    ind.intradayPrice = iPrice;
+    if (vwap != null) {
+      if (iPrice > vwap) {
+        add("vwap", "VWAP (intraday)", "bullish", 1.5, `Price $${iPrice.toFixed(2)} is above today's VWAP ($${vwap.toFixed(2)}). VWAP is the volume-weighted average price for the session — staying above it means intraday buyers are in control.`);
+      } else {
+        add("vwap", "VWAP (intraday)", "bearish", -1.5, `Price $${iPrice.toFixed(2)} is below today's VWAP ($${vwap.toFixed(2)}). Trading under VWAP means intraday sellers are in control — a headwind for calls.`);
+      }
+    }
+    // intraday relative volume — is today's move backed by participation?
+    const iVols = intraday.map((c) => c.v);
+    const iAvg = iVols.length > 1 ? iVols.slice(0, -1).reduce((a, b) => a + b, 0) / (iVols.length - 1) : 0;
+    const iRel = iAvg > 0 ? iVols[iVols.length - 1] / iAvg : 1;
+    if (iRel >= 1.5) {
+      add("ivol", "Intraday volume", "neutral", 0, `The latest bar traded ${iRel.toFixed(1)}× the session's average volume — the current move has real participation. Volume confirms, it doesn't pick direction.`);
+    }
+  }
+
   // ---- aggregate ----
   const score = factors.reduce((sum, f) => sum + f.weight, 0);
   const bullishCount = factors.filter((f) => f.direction === "bullish").length;
   const bearishCount = factors.filter((f) => f.direction === "bearish").length;
+
+  // Multi-timeframe alignment: does the daily trend agree with the intraday VWAP?
+  const trendFactor = factors.find((f) => f.key === "trend");
+  const vwapFactor = factors.find((f) => f.key === "vwap");
+  let alignment: "aligned" | "conflict" | "n/a" = "n/a";
+  if (trendFactor && vwapFactor && trendFactor.direction !== "neutral") {
+    alignment = trendFactor.direction === vwapFactor.direction ? "aligned" : "conflict";
+  }
 
   let lean: Lean;
   if (!hasEnoughData) lean = "Wait";
@@ -318,7 +370,7 @@ export function computeRecommendation(
 
   // ---- confidence ----
   // Base on how strong AND how one-sided the evidence is, then trim for risk.
-  const maxScore = 6.5; // sum of max absolute weights that can point one way
+  const maxScore = 8.0; // sum of max absolute weights that can point one way
   const strength = Math.min(1, Math.abs(score) / maxScore);
   const directional = bullishCount + bearishCount;
   const agreement = directional > 0
@@ -326,6 +378,8 @@ export function computeRecommendation(
     : 0.5;
   let confidence = Math.round((0.35 + 0.5 * strength) * (0.6 + 0.4 * agreement) * 100);
   if (directional <= 1) confidence = Math.round(confidence * 0.85); // stay humble on a single-factor read
+  if (alignment === "aligned") confidence += 8; // daily trend and intraday VWAP agree
+  else if (alignment === "conflict") confidence -= 12; // they disagree — lower-probability setup
   if (earningsGuard) confidence = Math.max(15, confidence - 20);
   if (!hasEnoughData) confidence = Math.min(confidence, 25);
   confidence = Math.max(10, Math.min(95, confidence));
@@ -352,12 +406,15 @@ export function computeRecommendation(
     "Options can lose 100% of premium — size positions small.",
     "Signals are probabilities, not certainties; confirm with your own read.",
   ];
+  if (alignment === "conflict") risks.unshift("Daily trend and intraday VWAP disagree — a lower-probability setup; wait for them to align.");
   if (earningsGuard) risks.unshift("Earnings within a week can cause large gaps and IV crush.");
   if (!hasEnoughData) risks.unshift(`Only ${candles.length} bars available — not enough history for a reliable read.`);
   if (avgVolume != null && lastVolume / (avgVolume || 1) <= 0.6) risks.push("Thin volume can produce false breakouts.");
 
   // ---- summary sentence ----
-  const summary = buildSummary(lean, confidence, factors, earningsGuard, hasEnoughData);
+  let summary = buildSummary(lean, confidence, factors, earningsGuard, hasEnoughData);
+  if (alignment === "aligned") summary += " Daily trend and intraday VWAP agree, which strengthens the read.";
+  else if (alignment === "conflict") summary += " Note: the daily trend and intraday VWAP disagree — often a reason to wait.";
 
   return {
     lean,

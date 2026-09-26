@@ -4,7 +4,7 @@
 // the expected-range band over the daily candles, then spells out the plan.
 
 import { useMemo } from "react";
-import { CircleAlert, Minus, Target } from "lucide-react";
+import { CircleAlert, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDashboard } from "./dashboard-context";
 import { useBars, useIntradayBars } from "./use-bars";

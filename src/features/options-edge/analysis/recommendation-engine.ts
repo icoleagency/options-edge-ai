@@ -89,6 +89,21 @@ export interface TradeRecommendation {
    * A "where it usually travels" band — NOT a prediction of where it will go.
    */
   expectedRange: { days: number; low: number; high: number; move: number } | null;
+  /**
+   * A concrete trade plan when there's a directional lean: where to enter, the
+   * target, the stop, the reward-to-risk ratio, the named setup, and a one-liner.
+   * null on "Wait" — no plan without an edge.
+   */
+  tradePlan: {
+    direction: "Call" | "Put";
+    entry: number;
+    target: number;
+    stop: number;
+    riskReward: number;
+    rrOk: boolean;
+    pattern: string;
+    rationale: string;
+  } | null;
   indicators: Indicators;
 }
 
@@ -430,6 +445,48 @@ export function computeRecommendation(
       }
     : null;
 
+  // ---- trade plan (entry / target / stop / reward-to-risk + named pattern) ----
+  let tradePlan: TradeRecommendation["tradePlan"] = null;
+  if ((lean === "Call" || lean === "Put") && S != null && R != null && atrVal != null) {
+    const entry = price;
+    const nearSupport = price - S <= atrVal;
+    const nearResistance = R - price <= atrVal;
+    let target: number;
+    let stop: number;
+    let pattern: string;
+    if (lean === "Call") {
+      target = R;
+      stop = S;
+      pattern = nearSupport
+        ? (strongUp ? "Pullback to support in an uptrend" : "Bounce off support")
+        : nearResistance ? "Breakout attempt at resistance"
+        : strongUp ? "Bullish trend continuation" : "Bullish momentum setup";
+    } else {
+      target = S;
+      stop = R;
+      pattern = nearResistance
+        ? (strongDown ? "Rejection at resistance in a downtrend" : "Rejection at resistance")
+        : nearSupport ? "Breakdown attempt at support"
+        : strongDown ? "Bearish trend continuation" : "Bearish momentum setup";
+    }
+    const risk = Math.abs(entry - stop);
+    const reward = Math.abs(target - entry);
+    const riskReward = risk > 0 ? +(reward / risk).toFixed(2) : 0;
+    const rrOk = riskReward >= 2;
+    const rationale = `${pattern}. Enter near $${entry.toFixed(2)}, target $${target.toFixed(2)}, stop $${stop.toFixed(2)} — reward-to-risk ${riskReward.toFixed(1)}:1${rrOk ? "." : ", below the 2:1 minimum, so consider waiting for a better entry."}`;
+    tradePlan = {
+      direction: lean,
+      entry: +entry.toFixed(2),
+      target: +target.toFixed(2),
+      stop: +stop.toFixed(2),
+      riskReward,
+      rrOk,
+      pattern,
+      rationale,
+    };
+    if (!rrOk) risks.unshift("Reward-to-risk is below 2:1 at the current price — the setup pays too little for the risk; consider waiting for a pullback.");
+  }
+
   // ---- summary sentence ----
   let summary = buildSummary(lean, confidence, factors, earningsGuard, hasEnoughData);
   if (alignment === "aligned") summary += " Daily trend and intraday VWAP agree, which strengthens the read.";
@@ -448,6 +505,7 @@ export function computeRecommendation(
     summary,
     hasEnoughData,
     expectedRange,
+    tradePlan,
     indicators: ind,
   };
 }

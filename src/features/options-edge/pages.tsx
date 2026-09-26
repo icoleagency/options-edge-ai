@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getCompany, glossary } from "./data";
 import { useDashboard } from "./dashboard-context";
 import { AITradeAnalyzerPanel, EarningsMonitorPanel, MarketNewsPanel, WatchlistPanel } from "./dashboard-panels";
+import { AnalyzerTradePlan } from "./analyzer-trade-plan";
 import { Panel, SampleBadge, StatusDot } from "./ui";
 import { LessonTrack, PreTradeChecklist, RiskSizer } from "./discipline";
 
